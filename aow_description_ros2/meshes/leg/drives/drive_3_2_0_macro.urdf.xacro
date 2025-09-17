@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="drive" params="name
+                            joint_child
+                            direction
+                            joint_parent:=''
+                            enable_collision:=true
+                            max_joint_position:=${3*pi}
+                            min_joint_position:=${3*pi}">
+
+    <xacro:property name="D_r_DDcom_x"              value="-0.05783"/> <!-- [m] -->
+    <xacro:property name="D_r_DDcom_y"              value= "-0.00014"/> <!-- [m] -->
+    <xacro:property name="D_r_DDcom_z"              value= "0.00036"/> <!-- [m] -->
+    <xacro:property name="m_D"                      value= "2.01511"/> <!-- [kg] -->
+    <xacro:property name="D_Ixx_D"                  value= "0.00332514820"/> <!-- [kg * m^2] -->
+    <xacro:property name="D_Iyy_D"                  value= "0.00318377804"/> <!-- [kg * m^2] -->
+    <xacro:property name="D_Izz_D"                  value= "0.00355095312"/> <!-- [kg * m^2] -->
+    <xacro:property name="D_Ixy_D"                  value= "0.00002567315"/> <!-- [kg * m^2] -->
+    <xacro:property name="D_Ixz_D"                  value= "0.00002599963"/> <!-- [kg * m^2] -->
+    <xacro:property name="D_Iyz_D"                  value= "0.00009462185"/> <!-- [kg * m^2] -->
+
+    <xacro:property name="collision_radius"         value= "0.05375"/> <!-- [m] -->
+    <xacro:property name="collision_length"         value= "0.119"/> <!-- [m] -->
+
+    <xacro:property name="max_joint_velocity"       value="8.5"/> <!-- [rad/s] -->
+    <xacro:property name="max_gear_velocity"        value="8.5"/> <!-- [rad/s] -->
+    <xacro:property name="max_joint_torque_freeze"  value="80.0"/> <!-- [Nm] -->
+    <xacro:property name="max_joint_torque_control" value="80.0"/> <!-- [Nm] -->
+    <xacro:property name="joint_damping"            value="0.0"/> <!-- [Nms/rad] -->
+    <xacro:property name="joint_friction"           value="0.0"/> <!-- [Nm] -->
+    <xacro:property name="max_current"              value="32.0"/> <!-- [A] -->
+
+    <!-- Drive link -->
+    <link name="${name}_drive">
+      <visual>
+       <origin xyz="0 0 0" rpy="0 0 0"/>
+       <geometry>
+       <mesh filename="package://anymal_d/urdf/leg/drives/drive_3_2_0_mesh.dae"
+             scale="${anymal_meshes_scale}"/>
+       </geometry>
+      </visual>
+      <xacro:if value="${enable_collision}">
+        <collision>
+          <origin xyz="${-0.5*collision_length} 0 0" rpy="0 ${0.5*pi} 0"/>
+            <geometry>
+              <cylinder radius="${collision_radius}" length="${collision_length}"/>
+            </geometry>
+        </collision>
+      </xacro:if>
+      <inertial>
+        <origin xyz="${D_r_DDcom_x} ${D_r_DDcom_y} ${D_r_DDcom_z}"
+                rpy="0 0 0"/>
+        <mass value="${m_D}"/>
+        <inertia ixx="${D_Ixx_D}" ixy="${D_Ixy_D}" ixz="${D_Ixz_D}"
+                iyy="${D_Iyy_D}" iyz="${D_Iyz_D}" izz="${D_Izz_D}"/>
+      </inertial>
+    </link>
+
+
+    <!-- Joint Drive output (or parent/output) -->
+    <joint name="${name}" type="revolute">
+      <xacro:if value="${joint_parent == ''}">
+        <parent link="${name}_drive"/>
+        <child link="${joint_child}"/>
+      </xacro:if>
+      <xacro:if value="${joint_parent != ''}">
+        <parent link="${joint_parent}"/>
+        <child link="${joint_child}"/>
+      </xacro:if>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="${direction} 0 0"/>
+      <limit effort="${max_joint_torque_freeze}"
+             command_effort="${max_joint_torque_control}"
+             gear_velocity="${max_gear_velocity}"
+             current="${max_current}"
+             lower="${-min_joint_position}"
+             upper="${max_joint_position}"
+             velocity="${max_joint_velocity}"/>
+      <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
+    </joint>
+
+    <!-- Joint child link (dummy link, dummy inertia required for Gazebo)-->
+    <link name="${joint_child}">
+      <inertial>
+        <origin xyz="0 0 0"
+                rpy="0 0 0"/>
+        <mass value="0.001"/>
+        <inertia ixx="0.000001" ixy="0.0" ixz="0.0"
+                 iyy="0.000001" iyz="0.0" izz="0.000001"/>
+      </inertial>
+    </link>
+
+    <!-- If a parent has been selected, the drive output is connected to the parent.  -->
+    <!-- That means the drive link is part of the child link  -->
+    <xacro:if value="${joint_parent != ''}">
+      <joint name="${joint_child}_to_${name}_drive" type="fixed">
+        <parent link="${joint_child}"/>
+        <child link="${name}_drive"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </joint>
+    </xacro:if>
+
+  </xacro:macro>
+
+
+</robot>

@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="face" params="face bagfile_is_played:=false
+                                        simulate_depth_camera:=false
+                                        simulate_wide_angle_camera:=false
+                                        depth_camera_lower_pitch:=60
+                                        depth_camera_lower_roll:=0
+                                        depth_camera_upper_pitch:=15
+                                        depth_camera_upper_roll:=0">
+
+    <xacro:property name="B_r_BF_x"        value="0.40870"/> <!--  [m] -->
+    <xacro:property name="B_r_BF_y"        value="0.00000"/> <!--  [m] -->
+    <xacro:property name="B_r_BF_z"        value="0.02050"/> <!--  [m] -->
+    <xacro:property name="B_r_BFcom_x"     value="-0.03620"/> <!--  [m] -->
+    <xacro:property name="B_r_BFcom_y"     value="0.00223"/> <!--  [m] -->
+    <xacro:property name="B_r_BFcom_z"     value="-0.02808"/> <!--  [m] -->
+    <xacro:property name="m_F"             value="0.48634"/> <!-- [kg] -->
+    <xacro:property name="B_Ixx_F"         value="0.00077413444"/> <!-- [kg * m^2] -->
+    <xacro:property name="B_Iyy_F"         value="0.00076586537"/> <!-- [kg * m^2] -->
+    <xacro:property name="B_Izz_F"         value="0.00055588292"/> <!-- [kg * m^2] -->
+    <xacro:property name="B_Ixy_F"         value="0.00000155433"/> <!-- [kg * m^2] -->
+    <xacro:property name="B_Ixz_F"         value="0.00006243539"/> <!-- [kg * m^2] -->
+    <xacro:property name="B_Iyz_F"         value="0.00000461106"/> <!-- [kg * m^2] -->
+
+    <!--  Lower face Depth Camera (Rfl) -->
+    <xacro:property name="F_r_FRfl_x"         value="-0.04028"/> <!--  [m] -->
+    <xacro:property name="F_r_FRfl_y"         value="-0.02500"/> <!--  [m] -->
+    <xacro:property name="F_r_FRfl_z"         value="-0.08051"/> <!--  [m] -->
+    <!--  Upper face Depth Camera (Rfu) -->
+    <xacro:property name="F_r_FRfu_x"         value="-0.00993"/> <!--  [m] -->
+    <xacro:property name="F_r_FRfu_y"         value="-0.02500"/> <!--  [m] -->
+    <xacro:property name="F_r_FRfu_z"         value="-0.04096"/> <!--  [m] -->
+
+    <!-- Generated properties -->
+    <xacro:property name="direction"    value="${1 if face == 'front' else -1}"/>
+
+    <!-- Fixed joint base face -->
+    <joint name="base_face_${face}" type="fixed">
+      <parent link="base"/>
+      <child link="face_${face}"/>
+      <origin xyz="${direction * B_r_BF_x} 0 ${B_r_BF_z}" rpy="0 0 ${-0.5*(direction-1) * pi}"/>
+    </joint>
+
+    <!-- Face structure link, visualization is part of base -->
+    <link name="face_${face}">
+      <inertial>
+        <origin   xyz="${B_r_BFcom_x} ${B_r_BFcom_y} ${B_r_BFcom_z}"
+                  rpy="0 0 0"/>
+        <mass     value="${m_F}"/>
+        <inertia  ixx="${B_Ixx_F}" ixy="${B_Ixy_F}" ixz="${B_Ixz_F}"
+                  iyy="${B_Iyy_F}" iyz="${B_Iyz_F}" izz="${B_Izz_F}"/>
+      </inertial>    
+    </link>
+
+    <!-- Depth Camera Lower -->
+    <xacro:include filename="$(find anymal_d)/urdf/base/sensors/depth_camera/realsense_d435_face_3_6_0.urdf.xacro"/>
+    <xacro:macro name="anymal_realsense_face_with_configuration"
+                 params="name
+                         *origin">
+      <xacro:anymal_realsense_face name="${name}"
+                                   parent="face_${face}"
+                                   simulation="${simulate_depth_camera}"
+                                   hz="$(arg depth_camera_frequency)"
+                                   bagfile_is_played="${bagfile_is_played}"
+                                   resolution_width="$(arg depth_camera_resolution_width)"
+                                   resolution_height="$(arg depth_camera_resolution_height)">
+        <xacro:insert_block name="origin"/>
+      </xacro:anymal_realsense_face>
+    </xacro:macro>
+
+    <xacro:anymal_realsense_face_with_configuration name="depth_camera_${face}_lower">
+      <origin xyz="${F_r_FRfl_x} ${F_r_FRfl_y} ${F_r_FRfl_z}"
+              rpy="${depth_camera_lower_roll / 180 * pi} ${depth_camera_lower_pitch / 180 * pi} 0"/>
+    </xacro:anymal_realsense_face_with_configuration>
+
+    <!-- Depth Camera Upper -->
+    <xacro:anymal_realsense_face_with_configuration name="depth_camera_${face}_upper">
+      <origin xyz="${F_r_FRfu_x} ${F_r_FRfu_y} ${F_r_FRfu_z}"
+              rpy="${depth_camera_upper_roll / 180 * pi} ${depth_camera_upper_pitch / 180 * pi} 0"/>
+    </xacro:anymal_realsense_face_with_configuration>
+
+    <!-- Wide Angle Camera -->
+    <xacro:include filename="$(find anymal_d)/urdf/base/sensors/wide_angle_camera/blackfly_s_3_6_0.urdf.xacro"/>
+    <xacro:blackfly name="wide_angle_camera_${face}" parent="face_${face}" simulation="${simulate_wide_angle_camera}" fps="25.0">
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+    </xacro:blackfly>
+
+
+  </xacro:macro>
+
+</robot>

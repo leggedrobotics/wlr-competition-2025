@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="anymal_shank" params="leg:=LF">
+
+    <xacro:property name="q_KfeS_yaw"             value="${-0.5*pi}"/> <!-- [rad] -->
+    <xacro:property name="S_r_SScom_x"            value="0.02186"/> <!-- [m] -->
+    <xacro:property name="S_r_SScom_y"            value="0.00895"/> <!-- [m] -->
+    <xacro:property name="S_r_SScom_z"            value="0.00042"/> <!-- [m] -->
+    <xacro:property name="m_S"                    value="0.49854"/> <!-- [kg] -->
+    <xacro:property name="S_Ixx_S"                value="0.00054939614"/> <!-- [kg * m^2] -->
+    <xacro:property name="S_Iyy_S"                value="0.00166971314"/> <!-- [kg * m^2] -->
+    <xacro:property name="S_Izz_S"                value="0.00127258622"/> <!-- [kg * m^2] -->
+    <xacro:property name="S_Ixy_S"                value="0.00002147115"/> <!-- [kg * m^2] -->
+    <xacro:property name="S_Ixz_S"                value="0.00001687902"/> <!-- [kg * m^2] -->
+    <xacro:property name="S_Iyz_S"                value="0.00000171584"/> <!-- [kg * m^2] -->
+    <xacro:property name="collision_r"            value="0.071"/> <!-- [m] -->
+    <xacro:property name="collision_l"            value="0.05732"/> <!-- [m] -->
+    <xacro:property name="collision_box_l"        value="0.13283"/> <!-- [m] -->
+    <xacro:property name="collision_box_w"        value="0.08302"/> <!-- [m] -->
+    <xacro:property name="collision_box_d"        value="0.05732"/> <!-- [m] -->
+
+    <!-- Generated properties -->
+    <xacro:property name="left"         value="${int(leg.startswith('L'))*2-1}"/>
+    <xacro:property name="front"        value="${int(leg.startswith('F', 1))*2-1}"/>
+    <xacro:property name="mirrored"     value="${'_mirrored' if left * front == -1 else ''}" />
+
+
+    <!-- joint KFE shank -->
+    <joint name="${leg}_shank_${leg}_shank_fixed" type="fixed">
+      <parent link="${leg}_SHANK"/>
+      <child link="${leg}_shank_fixed"/>
+      <origin xyz="0 0 0" rpy="0 0 ${left*q_KfeS_yaw}"/>
+    </joint>
+
+    <!-- Shank link -->
+    <link name="${leg}_shank_fixed">
+     <visual>
+       <origin xyz="0 0 0" rpy="0 0 ${(front-1)*0.5*pi}"/>
+       <geometry>
+         <mesh
+           filename="package://anymal_d/urdf/leg/shank/shank_3_6_0_mesh${mirrored}.dae"
+           scale="${anymal_meshes_scale}"/>
+       </geometry>
+      </visual>
+      <!-- Shank collision -->
+      <collision>
+        <origin xyz="0 0 0" rpy="${0.5*pi} 0 0"/>
+        <geometry>
+          <cylinder radius="${collision_r}" length="${collision_l}"/>
+        </geometry>
+      </collision>
+      <collision>
+        <origin xyz="${front*collision_box_l*0.5} 0 0" rpy="${0.5*pi} 0 0"/>
+        <geometry>
+          <box size="${fabs(collision_box_l)} ${fabs(collision_box_w)} ${fabs(collision_box_d)}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="${front*S_r_SScom_x} ${left*S_r_SScom_y} ${S_r_SScom_z}"
+                rpy="0 0 0"/>
+        <mass value="${m_S}"/>
+        <inertia ixx="${S_Ixx_S}" ixy="${front*left*S_Ixy_S}" ixz="${front*S_Ixz_S}"
+                 iyy="${S_Iyy_S}" iyz="${left*S_Iyz_S}"       izz="${S_Izz_S}"/>
+      </inertial>
+    </link>
+
+  </xacro:macro>
+
+</robot>

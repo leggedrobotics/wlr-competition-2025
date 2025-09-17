@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="docking_socket">
+
+    <xacro:property name="B_r_BDs_x"        value="0.26132"/> <!--  [m] -->
+    <xacro:property name="B_r_BDs_y"        value="0.00000"/> <!--  [m] -->
+    <xacro:property name="B_r_BDs_z"        value="-0.06205"/> <!--  [m] -->
+    <xacro:property name="Ds_r_DsDscom_x"   value="0.00606"/> <!--  [m] -->
+    <xacro:property name="Ds_r_DsDscom_y"   value="0.00000"/> <!--  [m] -->
+    <xacro:property name="Ds_r_DsDscom_z"   value="0.01903"/> <!--  [m] -->
+    <xacro:property name="m_Ds"             value="0.21905"/> <!-- [kg] -->
+    <xacro:property name="Ds_Ixx_Ds"        value="0.00010664534"/> <!-- [kg * m^2] -->
+    <xacro:property name="Ds_Iyy_Ds"        value="0.00015585103"/> <!-- [kg * m^2] -->
+    <xacro:property name="Ds_Izz_Ds"        value="0.00021982177"/> <!-- [kg * m^2] -->
+    <xacro:property name="Ds_Ixy_Ds"        value="0.00000005383"/> <!-- [kg * m^2] -->
+    <xacro:property name="Ds_Ixz_Ds"        value="0.00000491832"/> <!-- [kg * m^2] -->
+    <xacro:property name="Ds_Iyz_Ds"        value="0.00000017942"/> <!-- [kg * m^2] -->
+
+
+    <!-- Fixed joint to add docking  -->
+    <joint name="base_to_docking_socket" type="fixed">
+      <parent link="base"/>
+      <child link="docking_socket"/>
+      <origin xyz="${B_r_BDs_x} ${B_r_BDs_y} ${B_r_BDs_z}" rpy="0 0 0"/>
+    </joint>
+
+    <!-- docking socket link -->
+    <link name="docking_socket">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh
+              filename="package://anymal_d/urdf/base/docking_socket/docking_socket_3_6_0_mesh.dae"
+              scale="1.0 1.0 1.0"/>
+        </geometry>
+      </visual>
+      <inertial>
+        <origin   xyz="${Ds_r_DsDscom_x} ${Ds_r_DsDscom_y} ${Ds_r_DsDscom_z}"
+                  rpy="0 0 0"/>
+        <mass     value="${m_Ds}"/>
+        <inertia  ixx="${Ds_Ixx_Ds}" ixy="${Ds_Ixy_Ds}" ixz="${Ds_Ixz_Ds}"
+                  iyy="${Ds_Iyy_Ds}" iyz="${Ds_Iyz_Ds}" izz="${Ds_Izz_Ds}"/>
+      </inertial>
+    </link>
+
+  </xacro:macro>
+
+</robot>

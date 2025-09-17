@@ -1,0 +1,16 @@
+# Custom Controller Specific Configuration
+# This file contains parameters specific to the Custom controller
+
+controller_executor:
+  ros__parameters:
+    
+    # Controller type selection
+    controller_type: "custom"
+
+    model_path: ""
+
+    trajectory_file: "utils/trajectory_generation/example_trajectory_csv/rsl_path_scale5.0_rounds1.csv"
+
+    # Custom controller specific parameters
+    # Todo add stuff here
+

@@ -1,0 +1,4 @@
+.vscode
+
+# do not commit vendored libs
+/aow_controllers/third_party/

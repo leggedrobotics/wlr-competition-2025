@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<robot name="anymal" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Leg components -->
+  <xacro:macro name="leg" params="leg:=LF package:=anymal_d foot_version:=3_6_1">
+    <xacro:haa    leg="${leg}" version="'3_6_0'"         drive_version="'3_2_0'" package="${package}"/>
+    <xacro:hip    leg="${leg}" version="'3_6_0'"         package="${package}"/>
+    <xacro:hfe    leg="${leg}" version="'3_6_0'"         drive_version="'3_2_0'" package="${package}"/>
+    <xacro:thigh  leg="${leg}" version="'3_6_0'"         package="${package}"/>
+    <xacro:kfe    leg="${leg}" version="'3_6_0'"         drive_version="'3_2_0'" package="${package}"/>
+    <xacro:shank  leg="${leg}" version="'3_6_0'"         package="${package}"/>
+    <xacro:foot   leg="${leg}" version="${foot_version}" package="${package}"/>
+  </xacro:macro>
+
+  <xacro:macro name="haa" params="leg:=LF version drive_version package">
+    <xacro:include filename="$(find ${package})/urdf/leg/haa/haa_${version}_macro.urdf.xacro"/>
+    <xacro:anymal_haa leg="${leg}" drive_version="'${drive_version}'" enable_collision="false"/>
+  </xacro:macro>
+  <xacro:macro name="hip" params="leg:=LF version package">
+    <xacro:include filename="$(find ${package})/urdf/leg/hip/hip_${version}_macro.urdf.xacro"/>
+    <xacro:anymal_hip leg="${leg}"/>
+  </xacro:macro>
+  <xacro:macro name="hfe" params="leg:=LF version drive_version package">
+    <xacro:include filename="$(find ${package})/urdf/leg/hfe/hfe_${version}_macro.urdf.xacro"/>
+    <xacro:anymal_hfe leg="${leg}" drive_version="'${drive_version}'"/>
+  </xacro:macro>
+  <xacro:macro name="thigh" params="leg:=LF version package">
+    <xacro:include filename="$(find ${package})/urdf/leg/thigh/thigh_${version}_macro.urdf.xacro"/>
+    <xacro:anymal_thigh leg="${leg}"/>
+  </xacro:macro>
+  <xacro:macro name="kfe" params="leg:=LF version drive_version package">
+    <xacro:include filename="$(find ${package})/urdf/leg/kfe/kfe_${version}_macro.urdf.xacro"/>
+    <xacro:anymal_kfe leg="${leg}" drive_version="'${drive_version}'"/>
+  </xacro:macro>
+  <xacro:macro name="shank" params="leg:=LF version package">
+    <xacro:include filename="$(find ${package})/urdf/leg/shank/shank_${version}_macro.urdf.xacro"/>
+    <xacro:anymal_shank leg="${leg}"/>
+  </xacro:macro>
+  <xacro:macro name="foot" params="leg:=LF version package">
+    <xacro:include filename="$(find ${package})/urdf/leg/foot/foot_${version}_macro.urdf.xacro"/>
+    <xacro:anymal_foot leg="${leg}"/>
+  </xacro:macro>
+
+</robot>
+

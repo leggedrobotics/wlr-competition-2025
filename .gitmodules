@@ -1,0 +1,3 @@
+[submodule "aow_sim_worlds"]
+	path = aow_sim_worlds
+	url = git@github.com:PerFrivik/aow_sim_worlds.git

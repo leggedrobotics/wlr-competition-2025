@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="anymal_hip" params="leg:=LF">
+
+    <xacro:property name="H_r_HHcom_x"  value="0.03505"/> <!-- [m] -->
+    <xacro:property name="H_r_HHcom_y"  value="-0.00125"/> <!-- [m] -->
+    <xacro:property name="H_r_HHcom_z"  value="0.00000"/> <!-- [m] -->
+    <xacro:property name="m_H"          value="0.36386"/> <!-- [kg] -->
+    <xacro:property name="H_Ixx_H"      value="0.00023646957"/> <!-- [kg * m^2] -->
+    <xacro:property name="H_Iyy_H"      value="0.00055386457"/> <!-- [kg * m^2] -->
+    <xacro:property name="H_Izz_H"      value="0.00043888609"/> <!-- [kg * m^2] -->
+    <xacro:property name="H_Ixy_H"      value="0.00000345771"/> <!-- [kg * m^2] -->
+    <xacro:property name="H_Ixz_H"      value="0.00000001268"/> <!-- [kg * m^2] -->
+    <xacro:property name="H_Iyz_H"      value="0.00000001811"/> <!-- [kg * m^2] -->
+
+    <xacro:property name="collision_box_l"  value="0.11045"/> <!-- [m] -->
+    <xacro:property name="collision_box_w"  value="0.0849"/> <!-- [m] -->
+    <xacro:property name="collision_box_d"  value="0.0305"/> <!-- [m] -->
+
+    <!-- Generated properties -->
+    <xacro:property name="left"         value="${int(leg.startswith('L'))*2-1}"/>
+    <xacro:property name="front"        value="${int(leg.startswith('F', 1))*2-1}"/>
+    <xacro:property name="mirrored"     value="${'_mirrored' if left * front == -1 else ''}" />
+
+
+    <!-- joint HAA hip -->
+    <joint name="${leg}_HIP_${leg}_hip_fixed" type="fixed">
+      <parent link="${leg}_HIP"/>
+      <child link="${leg}_hip_fixed"/>
+      <origin xyz="0 0 0" rpy="0 0 ${(front-1)*0.5*pi}"/>
+    </joint>
+
+    <!-- Hip link -->
+    <link name="${leg}_hip_fixed">
+      <visual>
+        <origin xyz="0 0 0" rpy="${(left*front - 1)*0.5*pi} 0 ${(front-1)*0.5*pi}"/>
+        <geometry>
+          <mesh
+            filename="package://anymal_d/urdf/leg/hip/hip_3_6_0_mesh.dae"
+            scale="${anymal_meshes_scale}"/>
+        </geometry>
+      </visual>
+<!--      Disabled collision to avoid colliding with base collision model-->
+<!--      <collision>-->
+<!--        <origin xyz="${front*collision_box_l*0.5} ${-left*collision_box_d*0.5} 0" rpy="${0.5*pi} 0 0"/>-->
+<!--        <geometry>-->
+<!--          <box size="${fabs(collision_box_l)} ${fabs(collision_box_w)} ${fabs(collision_box_d)}"/>-->
+<!--        </geometry>-->
+<!--      </collision>-->
+      <inertial>
+        <origin xyz="${front*H_r_HHcom_x} ${left*H_r_HHcom_y} ${H_r_HHcom_z}"
+                rpy="0 0 0"/>
+        <mass value="${m_H}"/>
+        <inertia ixx="${H_Ixx_H}" ixy="${front*left*H_Ixy_H}" ixz="${front*H_Ixz_H}"
+                 iyy="${H_Iyy_H}" iyz="${left*H_Iyz_H}"       izz="${H_Izz_H}"/>
+      </inertial>
+    </link>
+
+  </xacro:macro>
+
+</robot>

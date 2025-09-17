@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- RealSense D435. Side version includes a mount and is not upside-down. -->
+  <xacro:macro name="anymal_realsense_side" params="name:=realsense_side
+                                                    parent:=base
+                                                    bagfile_is_played:=false
+                                                    hz:=15.0
+                                                    resolution_width:=424
+                                                    resolution_height:=240
+                                                    simulation:=^
+                                                    *origin">
+
+    <xacro:property name="m_Rs"            value="0.11196"/> <!-- [kg] -->
+    <xacro:property name="Rs_r_RsRscom_x"  value="-0.01352"/> <!-- [m] -->
+    <xacro:property name="Rs_r_RsRscom_y"  value="-0.02667"/> <!-- [m] -->
+    <xacro:property name="Rs_r_RsRscom_z"  value="-0.00198"/> <!-- [m] -->
+    <xacro:property name="Rs_Ixx_Rs"       value="0.00011356938"/> <!-- [kg * m^2] -->
+    <xacro:property name="Rs_Iyy_Rs"       value="0.00002382311"/> <!-- [kg * m^2] -->
+    <xacro:property name="Rs_Izz_Rs"       value="0.00012178739"/> <!-- [kg * m^2] -->
+    <xacro:property name="Rs_Ixy_Rs"       value="0.00000352850"/> <!-- [kg * m^2] -->
+    <xacro:property name="Rs_Ixz_Rs"       value="0.00000049332"/> <!-- [kg * m^2] -->
+    <xacro:property name="Rs_Iyz_Rs"       value="0.00000033737"/> <!-- [kg * m^2] -->
+
+    <!-- Camera joint -->
+    <joint name="${parent}_to_${name}_camera" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${name}_camera"/>
+      <xacro:insert_block name="origin"/>
+    </joint>
+
+    <!-- Camera link -->
+    <link name="${name}_camera">
+      <inertial>
+        <origin xyz="${Rs_r_RsRscom_x} ${Rs_r_RsRscom_y} ${Rs_r_RsRscom_z}" rpy="0 0 0"/>
+        <mass value="${m_Rs}" />
+        <inertia ixx="${Rs_Ixx_Rs}" ixy="${Rs_Ixy_Rs}" ixz="${Rs_Ixz_Rs}" iyy="${Rs_Iyy_Rs}" iyz="${Rs_Iyz_Rs}" izz="${Rs_Izz_Rs}"/>
+      </inertial>
+    </link>
+
+    <!--
+    Camera parent joint; the root attachment point of the camera.
+    This is included for frame tree consistency with the face realsenses, which are flipped.
+    -->
+    <!-- Frame lies on the left ir camera according to any_realsense2_camera urdf. -->
+    <joint name="${name}_camera_to_camera_parent" type="fixed">
+      <parent link="${name}_camera"/>
+      <child link="${name}_camera_parent"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </joint>
+
+    <!-- Camera parent link -->
+    <link name="${name}_camera_parent"/>
+
+    <!--
+    The frames depth_frame, depth_optical_frame and color_frame and color_optical_frame
+    are published by the driver, if it is not running we need to create them here.
+    -->
+    <xacro:if value="$(eval ${simulation} or ${bagfile_is_played})">
+      <!-- Depth frame joint -->
+      <joint name="${name}_camera_parent_to_depth_frame" type="fixed">
+        <parent link="${name}_camera_parent"/>
+        <child link="${name}_depth_frame"/>
+        <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      </joint>
+
+      <!-- Depth frame link -->
+      <link name="${name}_depth_frame"/>
+
+      <!-- Depth optical frame joint -->
+      <joint name="${name}_camera_depth_to_depth_optical_frame" type="fixed">
+        <parent link="${name}_depth_frame"/>
+        <child link="${name}_depth_optical_frame"/>
+        <origin xyz="0.0 0.0 0.0" rpy="-${pi / 2} 0.0 -${pi / 2}"/>
+      </joint>
+
+      <!-- Depth optical frame link -->
+      <link name="${name}_depth_optical_frame"/>
+
+      <!-- Camera color frame joint -->
+      <joint name="${name}_camera_to_color_frame" type="fixed">
+        <parent link="${name}_camera_parent"/>
+        <child link="${name}_color_frame"/>
+        <origin xyz="0 0.015 0" rpy="0 0 0"/>
+      </joint>
+
+      <!-- Camera color frame link -->
+      <link name="${name}_color_frame"/>
+
+      <!-- Camera color optical joint -->
+      <joint name="${name}_color_frame_to_color_optical_frame" type="fixed">
+        <parent link="${name}_color_frame"/>
+        <child link="${name}_color_optical_frame"/>
+        <origin xyz="0.0 0.0 0.0" rpy="-${pi / 2} 0.0 -${pi / 2}"/>
+      </joint>
+
+      <!-- Camera color optical link -->
+      <link name="${name}_color_optical_frame"/>
+    </xacro:if> <!-- simulation or bagfile_is_played -->
+
+    <!-- Simulation -->
+    <xacro:if value="${simulation}">
+      <!-- Gazebo plugin -->
+      <gazebo reference="${name}_camera_parent">
+        <sensor type="depth" name="${name}_camera_parent">
+          <always_on>1</always_on>
+          <visualize>true</visualize>
+          <update_rate>${hz}</update_rate>
+          <camera>
+            <horizontal_fov>1.50098</horizontal_fov> <!-- 86 degrees -->
+            <image>
+              <width>${resolution_width}</width>
+              <height>${resolution_height}</height>
+              <format>R8G8B8</format>
+            </image>
+            <depth_camera>
+
+            </depth_camera>
+            <clip>
+              <near>0.1</near>
+              <far>10.0</far>
+            </clip>
+          </camera>
+          <plugin name="camera_controller" filename="libgazebo_ros_openni_kinect.so">
+            <alwaysOn>false</alwaysOn>
+            <useDepth16UC1Format>true</useDepth16UC1Format>
+            <updateRate>0.0</updateRate>
+            <cameraName>${name}</cameraName>
+            <frameName>${name}_depth_optical_frame</frameName>
+            <imageTopicName>color/image_raw</imageTopicName>
+            <depthImageTopicName>aligned_depth_to_color/image_raw</depthImageTopicName>
+            <pointCloudTopicName>depth/color/points_empty</pointCloudTopicName>
+            <cameraInfoTopicName>color/camera_info</cameraInfoTopicName>
+            <depthImageCameraInfoTopicName>aligned_depth_to_color/camera_info</depthImageCameraInfoTopicName>
+            <pointCloudCutoff>0.0</pointCloudCutoff>
+            <pointCloudCutoffMax>3.0</pointCloudCutoffMax>
+            <hackBaseline>0.07</hackBaseline>
+            <distortionK1>0.0</distortionK1>
+            <distortionK2>0.0</distortionK2>
+            <distortionK3>0.0</distortionK3>
+            <distortionT1>0.0</distortionT1>
+            <distortionT2>0.0</distortionT2>
+            <CxPrime>0.0</CxPrime>
+            <Cx>0.0</Cx>
+            <Cy>0.0</Cy>
+            <focalLength>0.0</focalLength>
+          </plugin>
+        </sensor>
+      </gazebo>
+    </xacro:if> <!-- simulation -->
+  </xacro:macro>
+
+</robot>

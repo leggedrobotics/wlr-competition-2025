@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="face_shell" params="face">
+
+    <xacro:property name="Sf_r_SfSfcom_x" value="0.01446"/> <!--  [m] -->
+    <xacro:property name="Sf_r_SfSfcom_y" value="0.00004"/> <!--  [m] -->
+    <xacro:property name="Sf_r_SfSfcom_z" value="-0.01698"/> <!--  [m] -->
+    <xacro:property name="m_Sf"           value="0.13690"/> <!-- [kg] -->
+    <xacro:property name="Sf_Ixx_Sf"      value="0.00102140404"/> <!-- [kg * m^2] -->
+    <xacro:property name="Sf_Iyy_Sf"      value="0.00051576362"/> <!-- [kg * m^2] -->
+    <xacro:property name="Sf_Izz_Sf"      value="0.00057208503"/> <!-- [kg * m^2] -->
+    <xacro:property name="Sf_Ixy_Sf"      value="0.00000000954"/> <!-- [kg * m^2] -->
+    <xacro:property name="Sf_Ixz_Sf"      value="0.00004343039"/> <!-- [kg * m^2] -->
+    <xacro:property name="Sf_Iyz_Sf"      value="0.00000027592"/> <!-- [kg * m^2] -->
+    
+    
+    <!-- Fixed joint face face shell -->
+    <joint name="base_face_shell_${face}" type="fixed">
+      <parent link="face_${face}"/>
+      <child link="face_shell_${face}"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Face shell link -->
+    <link name="face_shell_${face}">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh
+              filename="package://anymal_d/urdf/base/shell/face_shell_3_6_0_mesh.dae"
+              scale="1.0 1.0 1.0"/>
+        </geometry>
+      </visual>
+      <inertial>
+        <origin   xyz="${Sf_r_SfSfcom_x} ${Sf_r_SfSfcom_y} ${Sf_r_SfSfcom_z}"
+                  rpy="0 0 0"/>
+        <mass     value="${m_Sf}"/>
+        <inertia  ixx="${Sf_Ixx_Sf}" ixy="${Sf_Ixy_Sf}" ixz="${Sf_Ixz_Sf}"
+                  iyy="${Sf_Iyy_Sf}" iyz="${Sf_Iyz_Sf}" izz="${Sf_Izz_Sf}"/>
+      </inertial>    
+    </link>
+
+  </xacro:macro>
+
+</robot>

@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="anymal_foot" params="leg:=LF">
+
+    <xacro:property name="S_r_SF_x"               value="0.10"/> <!-- [m] -->
+    <xacro:property name="S_r_SF_y"               value="0.02167"/> <!-- [m] -->
+    <xacro:property name="S_r_SF_z"               value="-0.35176"/> <!-- [m] shank to foot bottom (0.35) - 0.75*collision_foot_r -->
+    <xacro:property name="m_F"                    value="0.25"/> <!-- [kg] -->
+    <xacro:property name="F_r_FFcom_x"            value="0.0"/> <!-- [m] -->
+    <xacro:property name="F_r_FFcom_y"            value="-0.01688"/> <!-- [m] -->
+    <xacro:property name="F_r_FFcom_z"            value="0.14853"/> <!-- [m] -->
+    <xacro:property name="F_Ixx_F"                value="0.00343218932"/> <!-- [kg * m^2] -->
+    <xacro:property name="F_Iyy_F"                value="0.00342591127"/> <!-- [kg * m^2] -->
+    <xacro:property name="F_Izz_F"                value="0.00009000478"/> <!-- [kg * m^2] -->
+    <xacro:property name="F_Ixy_F"                value="0.00000000285"/> <!-- [kg * m^2] -->
+    <xacro:property name="F_Ixz_F"                value="0.00000000619"/> <!-- [kg * m^2] -->
+    <xacro:property name="F_Iyz_F"                value="0.00008127017"/> <!-- [kg * m^2] -->
+
+    <xacro:property name="collision_ball_r"       value="0.03325"/> <!-- [m] -->
+    <xacro:property name="collision_ball_y"       value="${collision_ball_r * sin(-20 / 180 * pi)}"/> <!-- [m] -->
+    <xacro:property name="collision_ball_z"       value="${collision_ball_r * cos(-20 / 180 * pi)}"/> <!-- [m] -->
+    <xacro:property name="collision_tube_r"    value="0.0175"/> <!-- [m] -->
+    <xacro:property name="collision_tube_l"    value="0.33373"/> <!-- [m] -->
+    <xacro:property name="leg_config"             value="xx"/> <!-- Leg configurations: xx (knees bent inwards), xo (knees bent backwards) -->
+
+    <!-- Generated properties -->
+    <xacro:property name="left"                   value="${int(leg.startswith('L'))*2-1}"/>
+
+    <xacro:if value="${leg_config=='xx'}">
+      <xacro:property name="front" value="${int(leg.startswith('F', 1))*2-1}"/>
+    </xacro:if>
+    <xacro:if value="${leg_config=='xo'}">
+      <xacro:property name="front" value="1"/>
+    </xacro:if>
+    <xacro:if value="${leg_config=='oo'}">
+      <xacro:property name="front" value="${int((leg.startswith('F', 1))*2-1)*(-1)}"/>
+    </xacro:if>
+    <xacro:if value="${leg_config=='ox'}">
+      <xacro:property name="front" value="-1"/>
+    </xacro:if>
+
+    <!-- joint shank foot -->
+    <joint name="${leg}_shank_fixed_${leg}_FOOT" type="fixed">
+      <parent link="${leg}_shank_fixed"/>
+      <child link="${leg}_FOOT"/>
+      <origin xyz="${front*S_r_SF_x} ${left*S_r_SF_y} ${S_r_SF_z}"
+              rpy="0 0 0"/>
+    </joint>
+
+    <!-- Foot link -->
+    <link name="${leg}_FOOT">
+     <visual>
+       <origin xyz="0 0 0" rpy="0 0 ${(front-1)*0.5*pi - (front*left*pi*0.25)}"/>
+       <geometry>
+         <mesh
+             filename="package://anymal_d/urdf/leg/foot/foot_3_1_1_mesh.dae"
+             scale="${anymal_meshes_scale}"/>
+       </geometry>
+      </visual>
+      <!-- Foot tube collision -->
+      <collision>
+        <origin xyz="0 ${left*(collision_ball_y - collision_tube_r * 0.5)} ${collision_ball_z + collision_tube_l * 0.5}" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="${fabs(collision_tube_r)}" length="${fabs(collision_tube_l)}"/>
+        </geometry>
+      </collision>
+      <!-- Foot ball collision -->
+      <collision>
+        <origin xyz="0 ${left*collision_ball_y} ${collision_ball_z}"/>
+        <geometry>
+          <sphere radius="${fabs(collision_ball_r)}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="${front*F_r_FFcom_x} ${left*F_r_FFcom_y} ${F_r_FFcom_z}"
+                rpy="0 0 0"/>
+        <mass value="${m_F}"/>
+        <inertia ixx="${F_Ixx_F}" ixy="${front*left*F_Ixy_F}" ixz="${front*F_Ixz_F}"
+                 iyy="${F_Iyy_F}" iyz="${left*F_Iyz_F}"       izz="${F_Izz_F}"/>
+      </inertial>
+    </link>
+
+    <!-- Gazebo customization -->
+    <gazebo reference="${leg}_FOOT">
+      <kp>${kp}</kp>
+      <kd>${kd}</kd>
+      <mu1>${mu}</mu1>
+      <mu2>${mu}</mu2>
+    </gazebo>
+
+  </xacro:macro>
+
+</robot>

@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="hatch_shell">
+
+    <xacro:property name="Sh_r_ShShcom_x" value="0.06631"/> <!--  [m] -->
+    <xacro:property name="Sh_r_ShShcom_y" value="0.00035"/> <!--  [m] -->
+    <xacro:property name="Sh_r_ShShcom_z" value="0.10319"/> <!--  [m] -->
+    <xacro:property name="m_Sh"           value="0.09653"/> <!-- [kg] -->
+    <xacro:property name="Sh_Ixx_Sh"      value="0.00019173168"/> <!-- [kg * m^2] -->
+    <xacro:property name="Sh_Iyy_Sh"      value="0.00144879520"/> <!-- [kg * m^2] -->
+    <xacro:property name="Sh_Izz_Sh"      value="0.00162332503"/> <!-- [kg * m^2] -->
+    <xacro:property name="Sh_Ixy_Sh"      value="0.00002292922"/> <!-- [kg * m^2] -->
+    <xacro:property name="Sh_Ixz_Sh"      value="0.00000308205"/> <!-- [kg * m^2] -->
+    <xacro:property name="Sh_Iyz_Sh"      value="0.00000584565"/> <!-- [kg * m^2] -->
+
+    <!-- Fixed joint base hatch -->
+    <joint name="base_hatch_shell" type="fixed">
+      <parent link="base"/>
+      <child link="hatch_shell"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Hatch link -->
+    <link name="hatch_shell">
+      <visual>
+        <origin xyz="0.0 0 0.0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://anymal_d/urdf/base/shell/hatch_shell_3_6_0_mesh.dae"
+                scale="1.0 1.0 1.0"/>
+        </geometry>
+      </visual>
+      <inertial>
+        <origin   xyz="${Sh_r_ShShcom_x} ${Sh_r_ShShcom_y} ${Sh_r_ShShcom_z}"
+                  rpy="0 0 0"/>
+        <mass     value="${m_Sh}"/>
+        <inertia  ixx="${Sh_Ixx_Sh}" ixy="${Sh_Ixy_Sh}" ixz="${Sh_Ixz_Sh}"
+                  iyy="${Sh_Iyy_Sh}" iyz="${Sh_Iyz_Sh}" izz="${Sh_Izz_Sh}"/>
+      </inertial>    
+    </link>
+
+  </xacro:macro>
+
+</robot>

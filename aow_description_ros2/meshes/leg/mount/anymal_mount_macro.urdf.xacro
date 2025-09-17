@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Wheel mount -->
+  <xacro:macro name="anymal_mount" params="leg:=^ mesh_name **properties">
+
+    <!-- Xacro:Properties -->
+    <xacro:insert_block name="properties"/>
+
+    <xacro:property name="left"  value="${int(leg.startswith('L'))*2-1}"/>
+    <xacro:property name="front" value="${int(leg.startswith('F', 1))*2-1}"/>
+
+    <!-- Mount link -->
+    <link name="${leg}_MOUNT">
+      <xacro:if value="$(arg mesh)">
+        <visual>
+          <origin xyz="0 0 0"
+                  rpy="0 0 ${(left-1)*0.5*PI}"/>
+          <geometry>
+            <mesh filename="${mesh_name}"
+                  scale="${aow_meshes_scale}"/>
+          </geometry>
+          <material name="anymal_material" />
+        </visual>
+      </xacro:if>
+      <inertial>
+        <origin xyz="${front*M_r_MMcom_x} ${left*M_r_MMcom_y} ${M_r_MMcom_z}"
+                rpy="0 0 0"/>
+        <mass value="${m_M}"/>
+        <inertia ixx="${M_Ixx_M}" ixy="${front*left*M_Ixy_M}" ixz="${front*M_Ixz_M}"
+                 iyy="${M_Iyy_M}" iyz="${left*M_Iyz_M}"       izz="${M_Izz_M}"/>
+      </inertial>
+    </link>
+
+    <!-- Foot adapter joint ankle -->
+    <joint name="${leg}_MOUNT_JOINT" type="fixed">
+      <parent link="${leg}_ADAPTER"/>
+      <child  link="${leg}_MOUNT"/>
+      <origin xyz="${front*A_r_AM_x} ${left*A_r_AM_y} ${A_r_AM_z}"
+              rpy="${left*q_AM_roll} ${front*q_AM_pitch} ${front*q_AM_yaw}"/>
+    </joint>
+
+  </xacro:macro>
+
+
+</robot>

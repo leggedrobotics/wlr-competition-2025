@@ -1,0 +1,193 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<root>
+ <tabbed_widget parent="main_window" name="Main Window">
+  <Tab containers="1" tab_name="Lin Vel">
+   <Container>
+    <DockSplitter count="2" orientation="-" sizes="0.500502;0.499498">
+     <DockArea name="LinVel">
+      <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
+       <range bottom="-0.000181" left="4.282760" right="9.270032" top="0.000148"/>
+       <limitY/>
+       <curve color="#1f77b4" name="/debug/obs/base_velocities/data[0]"/>
+       <curve color="#d62728" name="/debug/obs/base_velocities/data[1]"/>
+       <curve color="#1ac938" name="/debug/obs/base_velocities/data[3]"/>
+      </plot>
+     </DockArea>
+     <DockArea name="AngVel">
+      <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
+       <range bottom="-0.000272" left="4.282760" right="9.270032" top="0.000271"/>
+       <limitY/>
+       <curve color="#1ac938" name="/debug/obs/base_velocities/data[3]"/>
+       <curve color="#ff7f0e" name="/debug/obs/base_velocities/data[4]"/>
+       <curve color="#f14cc1" name="/debug/obs/base_velocities/data[5]"/>
+      </plot>
+     </DockArea>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab containers="1" tab_name="JointPos">
+   <Container>
+    <DockSplitter count="1" orientation="-" sizes="1">
+     <DockArea name="JointPos">
+      <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
+       <range bottom="-1.455544" left="4.276383" right="9.269962" top="1.396183"/>
+       <limitY/>
+       <curve color="#9467bd" name="/debug/obs/joint_positions/data[0]"/>
+       <curve color="#17becf" name="/debug/obs/joint_positions/data[10]"/>
+       <curve color="#bcbd22" name="/debug/obs/joint_positions/data[11]"/>
+       <curve color="#1f77b4" name="/debug/obs/joint_positions/data[1]"/>
+       <curve color="#d62728" name="/debug/obs/joint_positions/data[2]"/>
+       <curve color="#1ac938" name="/debug/obs/joint_positions/data[3]"/>
+       <curve color="#ff7f0e" name="/debug/obs/joint_positions/data[4]"/>
+       <curve color="#f14cc1" name="/debug/obs/joint_positions/data[5]"/>
+       <curve color="#9467bd" name="/debug/obs/joint_positions/data[6]"/>
+       <curve color="#17becf" name="/debug/obs/joint_positions/data[7]"/>
+       <curve color="#bcbd22" name="/debug/obs/joint_positions/data[8]"/>
+       <curve color="#1f77b4" name="/debug/obs/joint_positions/data[9]"/>
+      </plot>
+     </DockArea>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab containers="1" tab_name="JointVel">
+   <Container>
+    <DockSplitter count="1" orientation="-" sizes="1">
+     <DockArea name="...">
+      <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
+       <range bottom="-1.202479" left="4.276195" right="9.269930" top="14.995239"/>
+       <limitY/>
+       <curve color="#d62728" name="/debug/obs/joint_velocities/data[0]"/>
+       <curve color="#1ac938" name="/debug/obs/joint_velocities/data[10]"/>
+       <curve color="#ff7f0e" name="/debug/obs/joint_velocities/data[11]"/>
+       <curve color="#f14cc1" name="/debug/obs/joint_velocities/data[12]"/>
+       <curve color="#9467bd" name="/debug/obs/joint_velocities/data[13]"/>
+       <curve color="#17becf" name="/debug/obs/joint_velocities/data[14]"/>
+       <curve color="#bcbd22" name="/debug/obs/joint_velocities/data[15]"/>
+       <curve color="#1f77b4" name="/debug/obs/joint_velocities/data[1]"/>
+       <curve color="#d62728" name="/debug/obs/joint_velocities/data[2]"/>
+       <curve color="#1ac938" name="/debug/obs/joint_velocities/data[3]"/>
+       <curve color="#ff7f0e" name="/debug/obs/joint_velocities/data[4]"/>
+       <curve color="#f14cc1" name="/debug/obs/joint_velocities/data[5]"/>
+       <curve color="#9467bd" name="/debug/obs/joint_velocities/data[6]"/>
+       <curve color="#17becf" name="/debug/obs/joint_velocities/data[7]"/>
+       <curve color="#bcbd22" name="/debug/obs/joint_velocities/data[8]"/>
+       <curve color="#1f77b4" name="/debug/obs/joint_velocities/data[9]"/>
+      </plot>
+     </DockArea>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab containers="1" tab_name="tab4">
+   <Container>
+    <DockSplitter count="1" orientation="-" sizes="1">
+     <DockArea name="...">
+      <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
+       <range bottom="-0.925692" left="4.282835" right="9.270070" top="3.015760"/>
+       <limitY/>
+       <curve color="#d62728" name="/debug/obs/last_actions/data[0]"/>
+       <curve color="#1ac938" name="/debug/obs/last_actions/data[10]"/>
+       <curve color="#ff7f0e" name="/debug/obs/last_actions/data[11]"/>
+       <curve color="#f14cc1" name="/debug/obs/last_actions/data[12]"/>
+       <curve color="#9467bd" name="/debug/obs/last_actions/data[13]"/>
+       <curve color="#17becf" name="/debug/obs/last_actions/data[14]"/>
+       <curve color="#bcbd22" name="/debug/obs/last_actions/data[15]"/>
+       <curve color="#1f77b4" name="/debug/obs/last_actions/data[1]"/>
+       <curve color="#d62728" name="/debug/obs/last_actions/data[2]"/>
+       <curve color="#1ac938" name="/debug/obs/last_actions/data[3]"/>
+       <curve color="#ff7f0e" name="/debug/obs/last_actions/data[4]"/>
+       <curve color="#f14cc1" name="/debug/obs/last_actions/data[5]"/>
+       <curve color="#9467bd" name="/debug/obs/last_actions/data[6]"/>
+       <curve color="#17becf" name="/debug/obs/last_actions/data[7]"/>
+       <curve color="#bcbd22" name="/debug/obs/last_actions/data[8]"/>
+       <curve color="#1f77b4" name="/debug/obs/last_actions/data[9]"/>
+      </plot>
+     </DockArea>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab containers="1" tab_name="tab5">
+   <Container>
+    <DockSplitter count="1" orientation="-" sizes="1">
+     <DockArea name="...">
+      <plot flip_x="false" flip_y="false" mode="TimeSeries" style="Lines">
+       <range bottom="-1.012581" left="4.282879" right="9.270082" top="0.096863"/>
+       <limitY/>
+       <curve color="#d62728" name="/debug/obs/projected_gravity/data[0]"/>
+       <curve color="#1ac938" name="/debug/obs/projected_gravity/data[1]"/>
+       <curve color="#ff7f0e" name="/debug/obs/projected_gravity/data[2]"/>
+      </plot>
+     </DockArea>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab containers="1" tab_name="tab6">
+   <Container>
+    <DockSplitter count="1" orientation="-" sizes="1">
+     <DockArea name="...">
+      <plot flip_x="false" flip_y="false" mode="XYPlot" style="Lines">
+       <range bottom="-0.704992" left="-2.544478" right="0.737008" top="1.386607"/>
+       <limitY/>
+       <curve color="#0097ff" curve_y="/debug/obs/trajectory_waypoints/data[1]" curve_x="/debug/obs/trajectory_waypoints/data[0]" name="/debug/obs/trajectory_waypoints/data[[0];1]]"/>
+       <curve color="#0097ff" curve_y="/debug/obs/trajectory_waypoints/data[3]" curve_x="/debug/obs/trajectory_waypoints/data[4]" name="/debug/obs/trajectory_waypoints/data[[4];3]]"/>
+       <curve color="#0097ff" curve_y="/debug/obs/trajectory_waypoints/data[6]" curve_x="/debug/obs/trajectory_waypoints/data[7]" name="/debug/obs/trajectory_waypoints/data[[7];6]]"/>
+       <curve color="#0097ff" curve_y="/debug/obs/trajectory_waypoints/data[10]" curve_x="/debug/obs/trajectory_waypoints/data[9]" name="/debug/obs/trajectory_waypoints/data[[9];10]]"/>
+       <curve color="#0097ff" curve_y="/debug/obs/trajectory_waypoints/data[12]" curve_x="/debug/obs/trajectory_waypoints/data[13]" name="/debug/obs/trajectory_waypoints/data[1[3];2]]"/>
+       <curve color="#0097ff" curve_y="/debug/obs/trajectory_waypoints/data[15]" curve_x="/debug/obs/trajectory_waypoints/data[16]" name="/debug/obs/trajectory_waypoints/data[1[6];5]]"/>
+       <curve color="#0097ff" curve_y="/debug/obs/trajectory_waypoints/data[18]" curve_x="/debug/obs/trajectory_waypoints/data[19]" name="/debug/obs/trajectory_waypoints/data[1[9];8]]"/>
+       <curve color="#0097ff" curve_y="/debug/obs/trajectory_waypoints/data[21]" curve_x="/debug/obs/trajectory_waypoints/data[22]" name="/debug/obs/trajectory_waypoints/data[2[2];1]]"/>
+       <curve color="#0097ff" curve_y="/debug/obs/trajectory_waypoints/data[24]" curve_x="/debug/obs/trajectory_waypoints/data[25]" name="/debug/obs/trajectory_waypoints/data[2[5];4]]"/>
+       <curve color="#0097ff" curve_y="/debug/obs/trajectory_waypoints/data[27]" curve_x="/debug/obs/trajectory_waypoints/data[28]" name="/debug/obs/trajectory_waypoints/data[2[8];7]]"/>
+       <curve color="#ff0009" curve_y="/odometry/pose/pose/position/x" curve_x="/odometry/pose/pose/position/y" name="/odometry/pose/pose/position/[y;x]"/>
+      </plot>
+     </DockArea>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <currentTabIndex index="5"/>
+ </tabbed_widget>
+ <use_relative_time_offset enabled="1"/>
+ <!-- - - - - - - - - - - - - - - -->
+ <!-- - - - - - - - - - - - - - - -->
+ <Plugins>
+  <plugin ID="DataLoad CSV">
+   <parameters delimiter="0" time_axis=""/>
+  </plugin>
+  <plugin ID="DataLoad MCAP"/>
+  <plugin ID="DataLoad ROS2 bags">
+   <use_header_stamp value="false"/>
+   <discard_large_arrays value="true"/>
+   <max_array_size value="100"/>
+   <boolean_strings_to_number value="true"/>
+   <remove_suffix_from_strings value="true"/>
+   <selected_topics value=""/>
+  </plugin>
+  <plugin ID="DataLoad ULog"/>
+  <plugin ID="ROS2 Topic Subscriber">
+   <use_header_stamp value="false"/>
+   <discard_large_arrays value="true"/>
+   <max_array_size value="100"/>
+   <boolean_strings_to_number value="true"/>
+   <remove_suffix_from_strings value="true"/>
+   <selected_topics value="/LF_HAA_position_cmd;/LF_HFE_position_cmd;/LF_KFE_position_cmd;/LF_WHEEL_velocity_cmd;/LH_HAA_position_cmd;/LH_HFE_position_cmd;/LH_KFE_position_cmd;/LH_WHEEL_velocity_cmd;/RF_HAA_position_cmd;/RF_HFE_position_cmd;/RF_KFE_position_cmd;/RF_WHEEL_velocity_cmd;/RH_HAA_position_cmd;/RH_HFE_position_cmd;/RH_KFE_position_cmd;/RH_WHEEL_velocity_cmd;/clicked_point;/clock;/cmd_vel;/color_coded_path;/debug/detailed_observations;/distance_to_closest_waypoint;/debug/obs/base_velocities;/debug/obs/joint_positions;/debug/obs/joint_velocities;/debug/obs/last_actions;/debug/obs/projected_gravity;/debug/obs/trajectory_waypoints;/debug/robot_path_accumulated;/debug/trajectory_base_frame;/debug/waypoints_robot_frame;/debug/waypoints_world_frame;/goal_pose;/imu;/initialpose;/joint_commands;/joint_states;/joy;/joy/set_feedback;/network_input_debug;/observation_debug;/odometry;/parameter_events;/robot_description;/rosout;/tf;/tf_static;/trajectory_visualization;/world_mesh;/world_mesh_array"/>
+  </plugin>
+  <plugin ID="UDP Server"/>
+  <plugin ID="WebSocket Server"/>
+  <plugin ID="ZMQ Subscriber"/>
+  <plugin ID="Fast Fourier Transform"/>
+  <plugin ID="Quaternion to RPY"/>
+  <plugin ID="Reactive Script Editor">
+   <library code="--[[ Helper function to create a series from arrays&#xa;&#xa; new_series: a series previously created with ScatterXY.new(name)&#xa; prefix:     prefix of the timeseries, before the index of the array&#xa; suffix_X:   suffix to complete the name of the series containing the X value. If [nil], use the index of the array.&#xa; suffix_Y:   suffix to complete the name of the series containing the Y value&#xa; timestamp:   usually the tracker_time variable&#xa;              &#xa; Example:&#xa; &#xa; Assuming we have multiple series in the form:&#xa; &#xa;   /trajectory/node.{X}/position/x&#xa;   /trajectory/node.{X}/position/y&#xa;   &#xa; where {N} is the index of the array (integer). We can create a reactive series from the array with:&#xa; &#xa;   new_series = ScatterXY.new(&quot;my_trajectory&quot;) &#xa;   CreateSeriesFromArray( new_series, &quot;/trajectory/node&quot;, &quot;position/x&quot;, &quot;position/y&quot;, tracker_time );&#xa;--]]&#xa;&#xa;function CreateSeriesFromArray( new_series, prefix, suffix_X, suffix_Y, timestamp )&#xa;  &#xa;  --- clear previous values&#xa;  new_series:clear()&#xa;  &#xa;  --- Append points to new_series&#xa;  index = 0&#xa;  while(true) do&#xa;&#xa;    x = index;&#xa;    -- if not nil, get the X coordinate from a series&#xa;    if suffix_X ~= nil then &#xa;      series_x = TimeseriesView.find( string.format( &quot;%s.%d/%s&quot;, prefix, index, suffix_X) )&#xa;      if series_x == nil then break end&#xa;      x = series_x:atTime(timestamp)&#x9; &#xa;    end&#xa;    &#xa;    series_y = TimeseriesView.find( string.format( &quot;%s.%d/%s&quot;, prefix, index, suffix_Y) )&#xa;    if series_y == nil then break end &#xa;    y = series_y:atTime(timestamp)&#xa;    &#xa;    new_series:push_back(x,y)&#xa;    index = index+1&#xa;  end&#xa;end&#xa;&#xa;--[[ Similar to the built-in function GetSeriesNames(), but select only the names with a give prefix. --]]&#xa;&#xa;function GetSeriesNamesByPrefix(prefix)&#xa;  -- GetSeriesNames(9 is a built-in function&#xa;  all_names = GetSeriesNames()&#xa;  filtered_names = {}&#xa;  for i, name in ipairs(all_names)  do&#xa;    -- check the prefix&#xa;    if name:find(prefix, 1, #prefix) then&#xa;      table.insert(filtered_names, name);&#xa;    end&#xa;  end&#xa;  return filtered_names&#xa;end&#xa;&#xa;--[[ Modify an existing series, applying offsets to all their X and Y values&#xa;&#xa; series: an existing timeseries, obtained with TimeseriesView.find(name)&#xa; delta_x: offset to apply to each x value&#xa; delta_y: offset to apply to each y value &#xa;  &#xa;--]]&#xa;&#xa;function ApplyOffsetInPlace(series, delta_x, delta_y)&#xa;  -- use C++ indeces, not Lua indeces&#xa;  for index=0, series:size()-1 do&#xa;    x,y = series:at(index)&#xa;    series:set(index, x + delta_x, y + delta_y)&#xa;  end&#xa;end&#xa;"/>
+   <scripts/>
+  </plugin>
+  <plugin ID="CSV Exporter"/>
+  <plugin ID="ROS2 Topic Re-Publisher"/>
+ </Plugins>
+ <!-- - - - - - - - - - - - - - - -->
+ <previouslyLoaded_Datafiles/>
+ <previouslyLoaded_Streamer name="ROS2 Topic Subscriber"/>
+ <!-- - - - - - - - - - - - - - - -->
+ <customMathEquations/>
+ <snippets/>
+ <!-- - - - - - - - - - - - - - - -->
+</root>
+

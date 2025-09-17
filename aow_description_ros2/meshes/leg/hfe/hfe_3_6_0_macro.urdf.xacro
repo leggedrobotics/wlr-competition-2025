@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="anymal_hfe" params="leg:=LF drive_version">
+
+    <xacro:property name="H_r_HHfe_x"   value= "0.06900"/><!-- [m] -->
+    <xacro:property name="H_r_HHfe_y"   value= "0.00600"/><!-- [m] -->
+    <xacro:property name="H_r_HHfe_z"   value= "0.00000"/><!-- [m] -->
+    <xacro:property name="q_HHfe_yaw"   value="${-0.5*pi}"/><!-- [rad] -->
+
+    <!-- Generated properties -->
+    <xacro:property name="left"         value="${int(leg.startswith('L'))*2-1}"/>
+    <xacro:property name="front"        value="${int(leg.startswith('F', 1))*2-1}"/>
+
+    <!-- joint hip to HFE output -->
+    <joint name="${leg}_hip_fixed_${leg}_HFE_output" type="fixed">
+      <parent link="${leg}_hip_fixed"/>
+      <child link="${leg}_HFE_output"/>
+      <origin xyz="${front * H_r_HHfe_x} ${left * H_r_HHfe_y} ${H_r_HHfe_z}"
+              rpy="0 0 ${left*q_HHfe_yaw}"/>
+    </joint>
+
+    <!-- HFE output (dummy link, dummy inertia required for Gazebo) -->
+    <link name="${leg}_HFE_output">
+      <inertial>
+        <origin xyz="0 0 0"
+                rpy="0 0 0"/>
+        <mass value="0.001"/>
+        <inertia ixx="0.000001" ixy="0.0" ixz="0.0"
+                 iyy="0.000001" iyz="0.0" izz="0.000001"/>
+      </inertial>
+    </link>
+
+    <!-- HFE Drive link and joint -->
+    <xacro:include filename="$(find anymal_d)/urdf/leg/drives/drive_${drive_version}_macro.urdf.xacro"/>
+    <xacro:drive name="${leg}_HFE" joint_child="${leg}_THIGH" direction="${-left}" joint_parent="${leg}_HFE_output"/>
+
+  </xacro:macro>
+
+</robot>

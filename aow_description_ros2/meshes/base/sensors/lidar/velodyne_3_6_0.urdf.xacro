@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Velodyne sensor; origin is the sensor parent frame -->
+  <xacro:macro name="anymal_velodyne"   params="name:=velodyne
+                                                parent:=base
+                                                sensor_origin_frame:=lidar
+                                                topic:=/lidar/point_cloud
+                                                hz:=10
+                                                lasers:=16
+                                                samples:=440
+                                                collision_range:=0.3
+                                                min_range:=0.4
+                                                max_range:=130.0
+                                                noise:=0.008
+                                                min_angle:=-${pi}
+                                                max_angle:=${pi}
+                                                gpu:=true
+                                                simulation:=^
+                                                *origin">
+
+    <!-- Velodyne Puck LITE sensor + top protector (ANYbotics 3.6.0 version) -->
+    <xacro:property name="m_V"          value="0.90170"/> <!-- [kg] -->
+    <xacro:property name="V_r_Vcom_x"   value="-0.00371"/> <!-- [m] -->
+    <xacro:property name="V_r_Vcom_y"   value="-0.00326"/> <!-- [m] -->
+    <xacro:property name="V_r_Vcom_z"   value="-0.00485"/> <!-- [m] -->
+    <xacro:property name="V_Ixx_V"      value="0.00111563406"/> <!-- [kg * m^2] -->
+    <xacro:property name="V_Iyy_V"      value="0.00114682455"/> <!-- [kg * m^2] -->
+    <xacro:property name="V_Izz_V"      value="0.00132807373"/> <!-- [kg * m^2] -->
+    <xacro:property name="V_Ixy_V"      value="0.00012074344"/> <!-- [kg * m^2] -->
+    <xacro:property name="V_Ixz_V"      value="0.00011445184"/> <!-- [kg * m^2] -->
+    <xacro:property name="V_Iyz_V"      value="0.00010431906"/> <!-- [kg * m^2] -->
+
+    <xacro:property name="collision_radius" value= "0.07"/> <!-- [m] -->
+    <xacro:property name="collision_length" value= "0.1355"/> <!-- [m] --> <!-- Accounts for velodyne cage on top -->
+
+    <!-- Generated properties -->
+    <xacro:property name="gpu_string"   value="${'gpu_' if gpu else ''}"/>
+
+    <!-- parent to sensor parent joint -->
+    <joint name="${parent}_to_${name}" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${name}"/>
+      <xacro:insert_block name="origin"/>
+    </joint>
+
+    <!-- sensor parent to sensor joint. The transformation is hard-coded.
+    This accounts for the fact that the Velodyne driver rotates the measurements 90 degrees in yaw -->
+    <joint name="${name}_to_${sensor_origin_frame}" type="fixed">
+      <parent link="${name}"/>
+      <child link="${sensor_origin_frame}"/>
+      <origin xyz="0 0 0" rpy="0 0 ${pi/2}"/>
+    </joint>
+
+    <!--Sensor parent link -->
+    <link name="${name}">
+    </link>
+
+    <!-- Velodyne sensor link -->
+    <link name="${sensor_origin_frame}">
+      <visual>
+        <origin xyz="0 0 0" />
+        <geometry>
+          <mesh filename="package://anymal_d/urdf/base/sensors/lidar/velodyne_3_6_0_mesh.dae" />
+        </geometry>
+      </visual>
+      <visual>
+        <origin xyz="0 0 0" />
+        <geometry>
+          <mesh filename="package://anymal_d/urdf/base/sensors/lidar/velodyne_guard.dae" />
+        </geometry>
+      </visual>      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="${collision_radius}" length="${collision_length}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="${V_r_Vcom_x} ${V_r_Vcom_y} ${V_r_Vcom_z}" rpy="0.0 0.0 0.0"/>
+        <mass value="${m_V}"/>
+        <inertia ixx="${V_Ixx_V}" ixy="${V_Ixy_V}" ixz="${V_Ixz_V}" iyy="${V_Iyy_V}" iyz="${V_Iyz_V}" izz="${V_Izz_V}"/>
+      </inertial>
+    </link>
+
+    <xacro:if value="${simulation}">
+      <!-- velodyne_gazebo_plugins -->
+      <gazebo reference="${sensor_origin_frame}">
+        <sensor type="${gpu_string}ray" name="${sensor_origin_frame}-VLP16">
+          <pose>0 0 0 0 0 0</pose>
+          <visualize>false</visualize>
+          <update_rate>${hz}</update_rate>
+          <ray>
+            <scan>
+              <horizontal>
+                <samples>${samples}</samples>
+                <resolution>1</resolution>
+                <min_angle>${min_angle}</min_angle>
+                <max_angle>${max_angle}</max_angle>
+              </horizontal>
+              <vertical>
+                <samples>${lasers}</samples>
+                <resolution>1</resolution>
+                <min_angle>-${15.0*pi/180.0}</min_angle>
+                <max_angle> ${15.0*pi/180.0}</max_angle>
+              </vertical>
+            </scan>
+            <range>
+              <min>${collision_range}</min>
+              <max>${max_range+1}</max>
+              <resolution>0.001</resolution>
+            </range>
+            <noise>
+              <type>gaussian</type>
+              <mean>0.0</mean>
+              <stddev>0.0</stddev>
+            </noise>
+          </ray>
+          <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_velodyne_${gpu_string}laser.so">
+            <topicName>${topic}</topicName>
+            <frameName>${sensor_origin_frame}</frameName>
+            <min_range>${min_range}</min_range>
+            <max_range>${max_range}</max_range>
+            <organize_cloud>true</organize_cloud>
+            <gaussianNoise>${noise}</gaussianNoise>
+          </plugin>
+        </sensor>
+      </gazebo>
+    </xacro:if> <!-- simulation -->
+
+  </xacro:macro>
+
+</robot>

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="anymal_kfe" params="leg:=LF drive_version">
+
+    <xacro:property name="T_r_TKfe_x"   value="0.00000"/> <!-- [m] -->
+    <xacro:property name="T_r_TKfe_y"   value="0.18050"/> <!-- [m] -->
+    <xacro:property name="T_r_TKfe_z"   value="-0.28500"/> <!-- [m] -->
+    <xacro:property name="q_TKfe_yaw"   value="${0.5*pi}"/> <!-- [rad] -->
+
+    <!-- Generated properties -->
+    <xacro:property name="left"         value="${int(leg.startswith('L'))*2-1}"/>
+    <xacro:property name="front"        value="${int(leg.startswith('F', 1))*2-1}"/>
+
+
+    <!-- joint thigh KFE -->
+    <joint name="${leg}_thigh_fixed_${leg}_KFE_drive" type="fixed">
+      <parent link="${leg}_thigh_fixed"/>
+      <child link="${leg}_KFE_drive"/>
+      <origin xyz="${front * T_r_TKfe_x} ${left * T_r_TKfe_y} ${T_r_TKfe_z}" 
+              rpy="0 0 ${left*q_TKfe_yaw}"/>
+    </joint>
+
+    <!-- KFE Drive link and joint -->
+    <xacro:include filename="$(find anymal_d)/urdf/leg/drives/drive_${drive_version}_macro.urdf.xacro"/>
+    <xacro:drive name="${leg}_KFE" joint_child="${leg}_SHANK" direction="${left}"/>
+
+  </xacro:macro>
+
+</robot>

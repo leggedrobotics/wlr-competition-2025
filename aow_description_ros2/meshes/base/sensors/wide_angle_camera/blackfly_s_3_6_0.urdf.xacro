@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- FLIR Blackfly Wide Angle Camera -->
+  <xacro:macro name="blackfly" params="name:=blackfly
+                                       parent:=base
+                                       simulation:=^
+                                       fps:=170.0
+                                       *origin">
+
+    <xacro:property name="C_r_Cs_x"    value= "-0.00421"/> <!-- [m] -->
+    <xacro:property name="C_r_Cs_y"    value= "0.0"/> <!-- [m] -->
+    <xacro:property name="C_r_Cs_z"    value= "0.0"/> <!-- [m] -->
+
+
+    <!-- Camera joint -->
+    <joint name="${parent}_to_${name}_camera" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${name}_camera"/>
+      <xacro:insert_block name="origin"/>
+    </joint>
+
+    <!-- Camera link -->
+    <link name="${name}_camera">
+    </link>
+
+    <!-- Camera parent joint -->
+    <joint name="${name}_camera_to_camera_parent" type="fixed">
+      <parent link="${name}_camera"/>
+      <child link="${name}_camera_parent"/>
+      <origin xyz="${C_r_Cs_x} ${C_r_Cs_y} ${C_r_Cs_z}" rpy="-${pi / 2} 0.0 -${pi / 2}"/>
+    </joint>
+
+    <!-- Camera parent link -->
+    <link name="${name}_camera_parent"/>
+
+    <!-- Simulation -->
+    <xacro:if value="${simulation}">
+      <!-- Gazebo plugin -->
+      <gazebo reference="${name}_camera">
+        <sensor type="camera" name="${name}_camera">
+          <always_on>1</always_on>
+          <visualize>true</visualize>
+          <update_rate>${fps}</update_rate>
+          <camera name="${name}_camera">
+            <horizontal_fov>1.91986</horizontal_fov>
+            <image>
+              <width>1440</width>
+              <height>1080</height>
+              <format>R8G8B8</format>
+            </image>
+            <clip>
+              <near>0.02</near>
+              <far>300</far>
+            </clip>
+          </camera>
+          <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+            <alwaysOn>true</alwaysOn>
+            <updateRate>0.0</updateRate>
+            <cameraName>${name}</cameraName>
+            <imageTopicName>image_raw</imageTopicName>
+            <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+            <frameName>${name}_camera_parent</frameName>
+            <hackBaseline>0.0</hackBaseline>
+            <distortionK1>0.0</distortionK1>
+            <distortionK2>0.0</distortionK2>
+            <distortionK3>0.0</distortionK3>
+            <distortionT1>0.0</distortionT1>
+            <distortionT2>0.0</distortionT2>
+          </plugin>
+        </sensor>
+      </gazebo>
+    </xacro:if> <!-- simulation -->
+  </xacro:macro>
+
+</robot>

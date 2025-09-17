@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="anymal_haa" params="leg:=LF drive_version enable_collision:=true">
+
+    <xacro:property name="B_r_BHaa_x"   value="0.30400"/><!-- [m] -->
+    <xacro:property name="B_r_BHaa_y"   value="0.10900"/><!-- [m] -->
+    <xacro:property name="B_r_BHaa_z"   value="0.00000"/><!-- [m] -->
+
+    <!-- Generated properties -->
+    <xacro:property name="left"         value="${int(leg.startswith('L'))*2-1}"/>
+    <xacro:property name="front"        value="${int(leg.startswith('F', 1))*2-1}"/>
+
+    <!-- Drive properties -->
+    <xacro:property name="max_joint_position"       value="${0.698132 - left * 0.0872665}"/> <!-- [rad] -->
+    <xacro:property name="min_joint_position"       value="${0.698132 + left * 0.0872665}"/> <!-- [rad] -->
+
+    <!-- joint base HAA -->
+    <joint name="base_${leg}_HAA_drive" type="fixed">
+      <parent link="base"/>
+      <child link="${leg}_HAA_drive"/>
+      <origin xyz="${front * B_r_BHaa_x} ${left * B_r_BHaa_y} ${B_r_BHaa_z}" 
+              rpy="0 0 ${(front-1)*0.5*pi}"/>
+    </joint>
+
+    <!-- HAA Drive link and joint -->
+    <xacro:include filename="$(find anymal_d)/urdf/leg/drives/drive_${drive_version}_macro.urdf.xacro"/>
+    <xacro:drive name="${leg}_HAA"
+        joint_child="${leg}_HIP"
+        direction="${front}"
+        enable_collision="${enable_collision}"
+        max_joint_position="${max_joint_position}"
+        min_joint_position="${min_joint_position}"/>
+
+  </xacro:macro>
+
+</robot>

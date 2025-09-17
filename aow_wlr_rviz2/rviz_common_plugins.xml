@@ -1,0 +1,26 @@
+<library path="wlr_panel">
+  <class 
+    name="aow_wlr_rviz2/AowTrackingGraph"
+    type="aow_wlr_rviz2::AowTrackingGraph"
+    base_class_type="rviz_common::Panel">
+    <description>
+      A panel that displays motor battery status information
+    </description>
+  </class>
+  <class 
+    name="aow_wlr_rviz2/SmbBatteryPayloadPanel"
+    type="aow_wlr_rviz2::SmbBatteryPayloadPanel"
+    base_class_type="rviz_common::Panel">
+    <description>
+      A panel that displays payload battery status information
+    </description>
+  </class>
+  <class 
+    name="aow_wlr_rviz2/ResetPanel"
+    type="aow_wlr_rviz2::ResetPanel"
+    base_class_type="rviz_common::Panel">
+    <description>
+      A panel with a reset button to send reset signals to the controller and reset robot position
+    </description>
+  </class>
+</library>

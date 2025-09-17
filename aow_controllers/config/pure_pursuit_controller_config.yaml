@@ -1,0 +1,22 @@
+# Pure Pursuit Controller Specific Configuration
+# This file contains parameters specific to the Pure Pursuit controller
+
+controller_executor:
+  ros__parameters:
+    
+    controller_type: "pure_pursuit"
+    
+    model_path: "example_controllers/pure_pursuit/locomotion_policy/aow_locomotion_policy_3ms.pt"
+
+    trajectory_file: "utils/trajectory_generation/example_trajectory_csv/rsl_path_scale5.0_rounds1.csv"
+
+    # Joint position offset flags, linked to Isaaclab's action term 
+    use_default_joint_positions_offset_observation: true
+    use_default_joint_positions_offset_action: true
+
+    # Pure pursuit controller specific parameters
+    lookahead_distance: 2.0
+    max_linear_velocity: 3.0
+    max_angular_velocity: 1.0
+    desired_speed: 2.5
+  

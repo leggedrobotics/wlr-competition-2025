@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="top_shell">
+
+    <xacro:property name="St_r_StStcom_x"       value="-0.02260"/> <!--  [m] -->
+    <xacro:property name="St_r_StStcom_y"       value="-0.00027"/> <!--  [m] -->
+    <xacro:property name="St_r_StStcom_z"       value= "0.07263"/> <!--  [m] -->
+    <xacro:property name="m_St"                 value= "0.32381"/> <!-- [kg] -->
+    <xacro:property name="St_Ixx_St"            value= "0.00391191516"/> <!-- [kg * m^2] -->
+    <xacro:property name="St_Iyy_St"            value= "0.01761096758"/> <!-- [kg * m^2] -->
+    <xacro:property name="St_Izz_St"            value= "0.02086102766"/> <!-- [kg * m^2] -->
+    <xacro:property name="St_Ixy_St"            value= "-0.00001078994"/> <!-- [kg * m^2] -->
+    <xacro:property name="St_Ixz_St"            value= "-0.00048832706"/> <!-- [kg * m^2] -->
+    <xacro:property name="St_Iyz_St"            value= "0.00000445768"/> <!-- [kg * m^2] -->
+
+    <!-- Fixed joint base top shell -->
+    <joint name="base_top_shell" type="fixed">
+      <parent link="base"/>
+      <child link="top_shell"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Top shell link -->
+    <link name="top_shell">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh
+            filename="package://anymal_d/urdf/base/shell/top_shell_3_6_0_mesh.dae"
+            scale="1.0 1.0 1.0"/>
+        </geometry>
+      </visual>
+      <inertial>
+        <origin   xyz="${St_r_StStcom_x} ${St_r_StStcom_y} ${St_r_StStcom_z}"
+                  rpy="0 0 0"/>
+        <mass     value="${m_St}"/>
+        <inertia  ixx="${St_Ixx_St}" ixy="${St_Ixy_St}" ixz="${St_Ixz_St}"
+                  iyy="${St_Iyy_St}" iyz="${St_Iyz_St}" izz="${St_Izz_St}"/>
+      </inertial>
+    </link>
+  </xacro:macro>
+
+</robot>

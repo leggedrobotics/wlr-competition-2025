@@ -1,0 +1,221 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="base" params="fix_base:=false
+                                   bagfile_is_played:=false
+                                   simulate_depth_camera:=false
+                                   simulate_lidar:=false
+                                   simulate_wide_angle_camera:=false
+                                   depth_camera_frequency:=15.0
+                                   depth_camera_resolution_width:=424
+                                   depth_camera_resolution_height:=240
+                                   gpu_lidar:=true
+                                   lidar_frequency:=10.0
+                                   depth_camera_front_upper_roll:=0.0
+                                   depth_camera_front_upper_pitch:=15.0
+                                   depth_camera_front_lower_roll:=0.0
+                                   depth_camera_front_lower_pitch:=60.0
+                                   depth_camera_rear_upper_roll:=0.0
+                                   depth_camera_rear_upper_pitch:=15.0
+                                   depth_camera_rear_lower_roll:=0.0
+                                   depth_camera_rear_lower_pitch:=60.0
+                                   depth_camera_left_roll:=0.0
+                                   depth_camera_left_pitch:=42.0
+                                   depth_camera_right_roll:=0.0
+                                   depth_camera_right_pitch:=42.0
+                                   imu_roll:=180.0
+                                   imu_pitch:=0.0
+                                   imu_yaw:=180.0
+                                   docking_socket:=false
+                                   m_B:=8.27629
+                                   B_r_BBcom_x:=-0.02148
+                                   B_r_BBcom_y:=0.00173
+                                   B_r_BBcom_z:=-0.04417">
+    <!-- Inertia parameters for base -->
+    <xacro:property name="B_Ixx_B"            value="0.06185585085"/> <!-- [kg * m^2] -->
+    <xacro:property name="B_Iyy_B"            value="0.46467853407"/> <!-- [kg * m^2] -->
+    <xacro:property name="B_Izz_B"            value="0.47162119244"/> <!-- [kg * m^2] -->
+    <xacro:property name="B_Ixy_B"            value="0.00052357046"/> <!-- [kg * m^2] -->
+    <xacro:property name="B_Ixz_B"            value="-0.02204886469"/> <!-- [kg * m^2] -->
+    <xacro:property name="B_Iyz_B"            value="0.00058724812"/> <!-- [kg * m^2] -->
+
+    <!-- Use a box for base link (incl. shells) without HAA protrusions -->
+    <xacro:property name="collision_box_z"      value="0.016"/> <!-- [m] -->
+    <xacro:property name="collision_box_l"      value="0.894"/> <!-- [m] -->
+    <xacro:property name="collision_box_w"      value="0.1615"/> <!-- [m] -->
+    <xacro:property name="collision_box_d"      value="0.256"/> <!-- [m] -->
+
+    <!-- Use cylinders for HAA protrusions (incl. shell around) -->
+    <xacro:property name="B_r_BHaa_x"           value="0.304"/> <!-- [m] -->
+    <xacro:property name="shell_HAA_x"          value="0.0108"/> <!-- [m] --> <!-- Distance the shell protrudes over HAA towards HFE -->
+    <xacro:property name="collision_cyl_l"      value="0.159"/> <!-- [m] -->
+    <xacro:property name="collision_cyl_r"      value="0.089"/> <!-- [m] -->
+
+    <!-- Attach the robot to the world link if requested -->
+    <xacro:if value="${fix_base}">
+      <gazebo>
+        <joint name="world_joint" type="fixed">
+          <parent>base</parent>
+          <child>world</child>
+        </joint>
+      </gazebo>
+    </xacro:if>
+
+    <!-- Base link -->
+    <link name="base">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh
+            filename="package://anymal_d/urdf/base/base_3_6_0_mesh.dae"
+            scale="${anymal_meshes_scale}"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 ${collision_box_z}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${collision_box_l} ${collision_box_w} ${collision_box_d}"/>
+        </geometry>
+      </collision>
+      <collision>
+        <origin xyz="${B_r_BHaa_x + shell_HAA_x - collision_cyl_l * 0.5} ${collision_box_w * 0.5} 0" rpy="0 ${0.5*pi} 0"/>
+        <geometry>
+          <cylinder radius="${collision_cyl_r}" length="${collision_cyl_l - shell_HAA_x}"/>
+        </geometry>
+      </collision>
+      <collision>
+        <origin xyz="${B_r_BHaa_x + shell_HAA_x - collision_cyl_l * 0.5} ${-collision_box_w * 0.5} 0" rpy="0 ${0.5*pi} 0"/>
+        <geometry>
+          <cylinder radius="${collision_cyl_r}" length="${collision_cyl_l - shell_HAA_x}"/>
+        </geometry>
+      </collision>
+      <collision>
+        <origin xyz="${-(B_r_BHaa_x + shell_HAA_x - collision_cyl_l * 0.5)} ${collision_box_w * 0.5} 0" rpy="0 ${0.5*pi} 0"/>
+        <geometry>
+          <cylinder radius="${collision_cyl_r}" length="${collision_cyl_l - shell_HAA_x}"/>
+        </geometry>
+      </collision>
+      <collision>
+        <origin xyz="${-(B_r_BHaa_x + shell_HAA_x - collision_cyl_l * 0.5)} ${-collision_box_w * 0.5} 0" rpy="0 ${0.5*pi} 0"/>
+        <geometry>
+          <cylinder radius="${collision_cyl_r}" length="${collision_cyl_l - shell_HAA_x}"/>
+        </geometry>
+      </collision>
+
+      <!-- Shell self filtering -->
+      <self_filter>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="1.00 0.6 0.5"/>
+        </geometry>
+      </self_filter>
+    </link>
+
+    <!-- Fixed joint to add dummy inertia link -->
+    <joint name="base_to_base_inertia" type="fixed">
+      <parent link="base"/>
+      <child link="base_inertia"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Dummy inertia link, because KDL cannot have inertia on the base link -->
+    <link name="base_inertia">
+      <inertial>
+        <origin   xyz="${B_r_BBcom_x} ${B_r_BBcom_y} ${B_r_BBcom_z}"
+                  rpy="0 0 0"/>
+        <mass     value="${m_B}"/>
+        <inertia  ixx="${B_Ixx_B}" ixy="${B_Ixy_B}" ixz="${B_Ixz_B}"
+                  iyy="${B_Iyy_B}" iyz="${B_Iyz_B}" izz="${B_Izz_B}"/>
+      </inertial>
+    </link>
+
+    <!-- Fixed joint to add top shell link -->
+    <joint name="base_to_body_top" type="fixed">
+      <parent link="base"/>
+      <child link="body_top"/>
+      <origin xyz="0 0 0.144" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Body top link -->
+    <!-- Added as a separate link due to limitation in point_cloud_self_filter -->
+    <link name="body_top">
+      <self_filter>
+        <origin xyz="-0.2 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.3 0.09 0.005"/>
+        </geometry>
+      </self_filter>
+    </link>
+
+    <!-- describes shells-->
+    <xacro:include filename="$(find anymal_d)/urdf/base/shell/top_shell_3_6_0_macro.urdf.xacro"/>
+    <xacro:top_shell/>
+    <xacro:include filename="$(find anymal_d)/urdf/base/shell/bottom_shell_3_6_0_macro.urdf.xacro"/>
+    <xacro:bottom_shell/>
+    <xacro:include filename="$(find anymal_d)/urdf/base/shell/face_shell_3_6_0_macro.urdf.xacro"/>
+
+    <!-- describes faces (incl. Depth Cameras and WAC)  and face shells -->
+    <xacro:include filename="$(find anymal_d)/urdf/base/face/face_3_6_0_macro.urdf.xacro"/>
+    <xacro:face face="front" bagfile_is_played="${bagfile_is_played}" simulate_depth_camera="${simulate_depth_camera}" simulate_wide_angle_camera="${simulate_wide_angle_camera}"
+                depth_camera_upper_pitch="${depth_camera_front_upper_pitch}" depth_camera_upper_roll="${depth_camera_front_upper_roll}"
+                depth_camera_lower_pitch="${depth_camera_front_lower_pitch}" depth_camera_lower_roll="${depth_camera_front_lower_roll}"/>
+    <xacro:face face="rear"  bagfile_is_played="${bagfile_is_played}" simulate_depth_camera="${simulate_depth_camera}" simulate_wide_angle_camera="${simulate_wide_angle_camera}"
+                depth_camera_upper_pitch="${depth_camera_rear_upper_pitch}" depth_camera_upper_roll="${depth_camera_rear_upper_roll}"
+                depth_camera_lower_pitch="${depth_camera_rear_lower_pitch}" depth_camera_lower_roll="${depth_camera_rear_lower_roll}"/>
+    <xacro:face_shell face="front"/>
+    <xacro:face_shell face="rear"/>
+
+    <!-- describes battery-->
+    <xacro:include filename="$(find anymal_d)/urdf/base/battery/battery_3_6_0_macro.urdf.xacro"/>
+    <xacro:battery/>
+
+    <!-- describes docking socket/hatch-->
+    <xacro:include filename="$(find anymal_d)/urdf/base/docking_socket/docking_socket_3_6_0_macro.urdf.xacro"/>
+    <xacro:docking_socket/>
+
+    <!-- describes the HBC receiver -->
+    <xacro:include filename="$(find anymal_d)/urdf/base/hbc_receiver/hbc_receiver_3_6_0_macro.urdf.xacro"/>
+    <xacro:hbc_receiver/>
+
+    <!-- Epson IMU -->
+    <xacro:include filename="$(find any_description)/urdf/sensors/imu/epson/epson.urdf.xacro"/>
+    <xacro:epson name="imu" parent="base" update_rate="400" ns="sensors" frame_id="imu_link" topic_name="imu">
+        <origin xyz="-0.25565 0.00255 0.07672" rpy="${imu_roll/180*pi} ${imu_pitch/180*pi} ${imu_yaw/180*pi}"/>
+    </xacro:epson>
+
+    <!-- Depth Camera left -->
+    <xacro:include filename="$(find anymal_d)/urdf/base/sensors/depth_camera/realsense_d435_side_3_6_0.urdf.xacro"/>
+    <xacro:macro name="anymal_realsense_side_with_configuration"
+                 params="name
+                         *origin">
+      <xacro:anymal_realsense_side name="${name}"
+                                   parent="base"
+                                   simulation="${simulate_depth_camera}"
+                                   hz="$(arg depth_camera_frequency)"
+                                   bagfile_is_played="${bagfile_is_played}"
+                                   resolution_width="$(arg depth_camera_resolution_width)"
+                                   resolution_height="$(arg depth_camera_resolution_height)">
+        <xacro:insert_block name="origin"/>
+      </xacro:anymal_realsense_side>
+    </xacro:macro>
+
+    <xacro:anymal_realsense_side_with_configuration    name="depth_camera_left">
+      <origin xyz="-0.02500 0.09230 0.01230" rpy="${depth_camera_left_roll/180*pi} ${depth_camera_left_pitch/180*pi} ${pi/2}"/>
+    </xacro:anymal_realsense_side_with_configuration>
+
+    <!-- Depth Camera right -->
+    <xacro:anymal_realsense_side_with_configuration  name="depth_camera_right">
+      <origin xyz="-0.02500 -0.09230 0.01230" rpy="${depth_camera_right_roll/180*pi} ${depth_camera_right_pitch/180*pi} ${-pi/2}"/>
+    </xacro:anymal_realsense_side_with_configuration>
+
+    <!-- LIDAR -->
+    <xacro:include filename="$(find anymal_d)/urdf/base/sensors/lidar/velodyne_3_6_0.urdf.xacro"/>
+    <!--  Please fill in the pose following the Velodyne user manual convention. -->
+    <xacro:anymal_velodyne name="lidar_parent" parent="base" simulation="${simulate_lidar}" gpu="${gpu_lidar}">
+      <origin xyz="-0.310 0.0 0.1585" rpy="0 0 ${pi/2}"/>
+    </xacro:anymal_velodyne>
+
+  </xacro:macro>
+
+</robot>

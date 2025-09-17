@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+ <model name="COLOSSEUM">
+   <pose>0 0 0 0 0 0</pose>
+   <static>true</static>
+   <link name="link">
+     <collision name="collision">
+       <geometry>
+         <mesh>
+           <uri>model://COLOSSEUM/meshes/COLOSSEUM.stl</uri>
+         </mesh>
+       </geometry>
+     </collision>
+     <visual name="visual">
+       <geometry>
+         <mesh>
+           <uri>model://COLOSSEUM/meshes/COLOSSEUM.stl</uri>
+         </mesh>
+       </geometry>
+       <material>
+         <ambient>0.8 0.8 0.8 1</ambient>
+         <diffuse>0.8 0.8 0.8 1</diffuse>
+         <specular>0.8 0.8 0.8 1</specular>
+       </material>       
+     </visual>
+   </link>
+ </model>
+</sdf>

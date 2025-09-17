@@ -1,0 +1,118 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="default">
+    
+    <!-- Random seed for reproducible simulations -->
+    <random_seed>42</random_seed>
+    
+    <!-- Physics - Configured for Determinism -->
+    <physics name="default_physics" type="ode">
+      <!-- <max_step_size>0.0025</max_step_size> -->
+      <!-- 200hz -->
+      <max_step_size>0.005</max_step_size>
+      <!-- <real_time_factor>1.0</real_time_factor> -->
+      <gravity>0 0 -9.81</gravity>
+      <max_contacts>20</max_contacts>
+      <ode>
+        <solver>
+          <type>world</type>  <!-- More deterministic than 'quick' -->
+          <iters>100</iters>  <!-- Higher iterations for stability -->
+          <sor>1.0</sor>  <!-- More stable value -->
+          <use_dynamic_moi_rescaling>false</use_dynamic_moi_rescaling>
+        </solver>
+        <constraints>
+          <cfm>0.0</cfm>  <!-- Zero constraint force mixing for determinism -->
+          <erp>0.2</erp>  <!-- Error reduction parameter -->
+          <contact_max_correcting_vel>10.0</contact_max_correcting_vel>
+          <contact_surface_layer>0.001</contact_surface_layer>  <!-- Smaller for precision -->
+        </constraints>
+      </ode>
+    </physics>
+    
+    <!-- Plugin for physics engine -->
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics">
+    </plugin>
+    
+    <!-- Plugin for user commands -->
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands">
+    </plugin>
+    
+    <!-- Plugin for scene broadcasting -->
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster">
+    </plugin>
+    
+    <!-- Sun -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- Ground Plane -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.7</mu>
+                <mu2>0.7</mu2>
+                <!-- <slip1>0.2</slip1>
+                <slip2>0.2</slip2> -->
+                <!-- <fdir1>0 0 0</fdir1> -->
+              </ode>
+              <torsional>
+                <coefficient>1.0</coefficient>
+                <use_patch_radius>true</use_patch_radius>
+                <patch_radius>0.1</patch_radius>
+                <surface_radius>0.1</surface_radius>
+                <ode>
+                  <slip>0.0</slip>
+                </ode>
+              </torsional>
+            </friction>
+            <contact>
+              <ode>
+                <soft_cfm>0</soft_cfm>
+                <soft_erp>0.2</soft_erp>
+                <kp>1e+13</kp>
+                <kd>1</kd>
+                <max_vel>0.01</max_vel>
+                <min_depth>0</min_depth>
+              </ode>
+            </contact>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.8 1</ambient>
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+            <specular>0.8 0.8 0.8 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>

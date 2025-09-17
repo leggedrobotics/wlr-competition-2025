@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="hbc_receiver">
+
+    <xacro:property name="Hr_r_HrHrcom_x" value="-0.00144"/> <!--  [m] -->
+    <xacro:property name="Hr_r_HrHrcom_y" value="-0.00075"/> <!--  [m] -->
+    <xacro:property name="Hr_r_HrHrcom_z" value="-0.01143"/> <!--  [m] -->
+    <xacro:property name="m_Hr"           value="0.60727"/> <!-- [kg] -->
+    <xacro:property name="Hr_Ixx_Hr"      value="0.00172041475"/> <!-- [kg * m^2] -->
+    <xacro:property name="Hr_Iyy_Hr"      value="0.00100683572"/> <!-- [kg * m^2] -->
+    <xacro:property name="Hr_Izz_Hr"      value="0.00217149159"/> <!-- [kg * m^2] -->
+    <xacro:property name="Hr_Ixy_Hr"      value="0.00002466045"/> <!-- [kg * m^2] -->
+    <xacro:property name="Hr_Ixz_Hr"      value="0.00000195244"/> <!-- [kg * m^2] -->
+    <xacro:property name="Hr_Iyz_Hr"      value="0.00003598867"/> <!-- [kg * m^2] -->
+
+
+    <!-- Fixed joint base battery -->
+    <joint name="base_hbc_receiver" type="fixed">
+      <parent link="base"/>
+      <child link="hbc_receiver"/>
+      <origin xyz="-0.04350 0.0 0.14400" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Shell link -->
+    <link name="hbc_receiver">
+      <inertial>
+        <origin   xyz="${Hr_r_HrHrcom_x} ${Hr_r_HrHrcom_y} ${Hr_r_HrHrcom_z}"
+                  rpy="0 0 0"/>
+        <mass     value="${m_Hr}"/>
+        <inertia  ixx="${Hr_Ixx_Hr}" ixy="${Hr_Ixy_Hr}" ixz="${Hr_Ixz_Hr}"
+                  iyy="${Hr_Iyy_Hr}" iyz="${Hr_Iyz_Hr}" izz="${Hr_Izz_Hr}"/>
+      </inertial>
+    </link>
+
+  </xacro:macro>
+
+</robot>
