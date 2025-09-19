@@ -1,11 +1,11 @@
-# WLR Competition 2025 - Anymal on Wheels
+# WLR Competition 2025 - Anymal on Wheels (AoW)
 
 **Maintainers**: 
 - Victor Klemm
 - Jiangpeng Hu  
 - Per Frivik (pfrivik@ethz.ch)
 
-This repository contains the control framework for the WLR Competition 2025. Participants implement custom controllers for autonomous quadruped robots using neural network policies in a ROS 2 simulation environment.
+This repository contains the control framework for the WLR Competition 2025. Participants develop custom controllers for a four-wheeled quadruped robot using their preferred control algorithms to track trajectories in a ROS 2 / Gazebo simulation environment.
 
 **Tested with ROS 2 Jazzy on Ubuntu 24.04 LTS.**
 
@@ -15,7 +15,7 @@ This repository contains the control framework for the WLR Competition 2025. Par
 - ROS 2 Jazzy
 - CUDA-capable GPU (optional, for GPU acceleration)
 
-**Don't have Ubuntu 24.04 or ROS 2 Jazzy?** We highly recommend using [Distrobox](https://distrobox.it/) to run the competition framework in a containerized Ubuntu 24.04 environment.
+**Don't have Ubuntu 24.04 or ROS 2 Jazzy?** We highly recommend using [Distrobox](https://distrobox.it/) to run the competition framework in a containerized ROS2 Jazzy environment.
 
 ## 🚀 Installation
 
@@ -48,6 +48,11 @@ sudo apt install nvidia-cuda-toolkit
 ```
 Then choose option 2 (GPU) when running the setup script. GPU acceleration provides faster neural network inference but is optional for the competition.
 
+**Note**: When using GPU acceleration, you may see the following PyTorch warning - this is expected and can be safely ignored:
+```
+RNN module weights are not part of single contiguous chunk of memory. This means they need to be compacted at every call, possibly greatly increasing memory usage.
+```
+
 ### 4. Build
 ```bash
 cd ~/wlr_ws
@@ -63,7 +68,6 @@ source install/setup.bash
 - Main execution framework
 - Handles observations (joint states, IMU, trajectory)
 - Publishes joint commands at 200Hz
-- Runs neural network inference at 50Hz
 
 **Base Controller Interface** (`aow_controllers/include/aow_controllers/base_controller.hpp`)
 - Abstract base class for all controllers
@@ -72,7 +76,7 @@ source install/setup.bash
 
 ### Example Controllers
 
-- **End2End**: Complete autonomous navigation with neural networks
+- **End2End**: Complete trajectory tracking with neural network policy
 - **PurePursuit**: Traditional geometric path following 
 - **Custom**: Skeleton for your implementation
 
@@ -153,66 +157,56 @@ custom_controller:
 
 ### 4. Launch File (`launch/custom_controller.launch.py`)
 - Launch your controller with proper configuration
-- Include Gazebo simulation environment
 
-## 🎯 Quick Start
 
-Test the framework with existing controllers:
 ```bash
-# Launch end-to-end controller
-ros2 launch aow_controllers end2end.launch.py
-
-# Launch pure pursuit controller
-ros2 launch aow_controllers pure_pursuit.launch.py
-
 # Launch your custom controller (after implementation)
 ros2 launch aow_controllers custom_controller.launch.py
 ```
 
 ## 📊 Performance Evaluation
 
-### Time-Based Scoring System
+The competition evaluates controllers based on **trajectory completion time** with strict **path adherence requirements**.
 
-The competition uses a **time integration scoring system** that measures how long it takes your robot to complete the trajectory:
+### 🏆 Scoring System
 
-**Score = Integrated Time (seconds)**
-- Lower scores are better
-- Timer starts when scoring begins and continues until trajectory completion
-- Best possible score is the minimum time needed to complete the trajectory
+**Primary Metric: Completion Time**
+- **Score = Total Time to Complete Trajectory (seconds)**
+- **Lower scores win** - fastest completion time ranks highest
+- Timer runs continuously from start until trajectory completion
+- **Completion Criteria**: Trajectory is considered complete when the **last waypoint** becomes the closest waypoint (using the same distance calculation method described below)
 
-### Elimination Rules
+### ⚠️ Elimination Criteria
 
-**Path Deviation Penalty**: 
-- Robot must stay within **0.3 meters** of the closest waypoint
-- **Total accumulated off-path time** is tracked across all off-path episodes
-- Robot is **eliminated** if total off-path time exceeds **5.0 seconds**
-- Eliminated robots receive a score of **infinity (∞)**
+Your robot will be **eliminated** and receive a score of **∞** if it violates path constraints:
 
-**How is distance to the path calculated?**
-- The distance to the path is computed by searching for the closest waypoint among the **next 100 waypoints** ahead of the robot's current position on the trajectory.
-- The search always moves **forward** along the trajectory and never goes backward, so the robot cannot be considered closer to a previous part of the path.
-- This ensures progress and prevents shortcutting or reversing along the path.
+**Path Adherence Rule:**
+- Must stay within **0.3 meters** of the reference trajectory
+- **Cumulative off-path time** cannot exceed **5.0 seconds**
+- Off-path episodes are tracked and accumulated throughout the entire run
 
-**Example**: If your robot goes off-path multiple times:
-- Off-path for 2.1s → back on path
-- Off-path for 0.8s → back on path  
-- Off-path for 1.5s → back on path
-- Off-path for 0.7s → **ELIMINATED** (2.1 + 0.8 + 1.5 + 0.7 = 5.1s total)
+**Distance Calculation:**
+The system calculates path deviation by:
+1. Searching the **next 100 waypoints** ahead of the robot's current trajectory position
+2. Finding the closest waypoint among these candidates
+3. Measuring euclidean distance to this closest waypoint
+4. **Forward-only search** prevents shortcuts and ensures trajectory progress
 
-### RViz Monitoring
+### 📈 Real-Time Monitoring
 
-The RViz interface displays real-time scoring information:
-- **SCORE**: Current integrated time (or "ELIMINATED (∞)" if eliminated)
-- **Off-path Counter**: Shows accumulated off-path time as "X.X/5.0s"
-- **Path Visualization**: Color-coded robot path (green = on-path, red = off-path)
+**RViz Interface:**
+- **SCORE**: Current completion time (or "ELIMINATED (∞)")
+- **Off-path Counter**: "X.X/5.0s" - shows accumulated violation time
+- **Path Visualization**: Green = on-path, Red = off-path trajectory
 
-### Topics Published
+**ROS Topics:**
+- `/score` (Float64): Current score (∞ if eliminated)
+- `/integrated_time` (Float64): Raw elapsed time
+- `/off_path_time` (Float64): Total accumulated off-path time
 
-- `/score`: Current score (Float64) - infinity if eliminated
-- `/integrated_time`: Raw time elapsed (Float64)
-- `/off_path_time`: Total accumulated off-path time (Float64)
+**Final Ranking:** Based on lowest completion time among non-eliminated robots.
 
-Competition ranking will be based on the lowest score (fastest completion time) among non-eliminated robots.
+**Note on Scoring Determinism:** We understand that simulation environments may exhibit some non-deterministic behavior. Final competition scoring will be conducted on our evaluation trajectory (which participants do not have access to), and we will account for any simulation variability in our grading methodology.
 
 ## ⏱️ Lockstep Synchronization
 
@@ -286,20 +280,24 @@ You can adapt and modify the training to improve the controller performance for 
 
 ## 📦 Submission Guidelines
 
-### What You Can Submit
+### Submission Process
+1. **Email Submission**: Send an email to **pfrivik@ethz.ch** with your repository name
+2. **GitHub Access**: We will reply with a GitHub username from our referee team that you need to invite to your repository
+3. **Default Configuration**: Ensure your launch files and YAML configuration files are set to launch your controller by default (the one you want us to evaluate)
+4. **Evaluation**: Our referee team will clone and evaluate your submission directly from your repository
+
+### What You Can Change/Modify
 - **Custom controller files**: `custom_controller_class.hpp` and `custom_controller_class.cpp`
 - **Configuration**: `custom_controller_config.yaml` 
 - **Launch file**: `custom_controller.launch.py`
 - **Build files**: Updated `CMakeLists.txt` and `package.xml` (if needed)
-- **External libraries**: You can use any additional libraries you want
+- **External libraries**: You can use any additional libraries you want, but similarly like the setup_libtorch.sh script works, everything must be inside of the third_party folder. In case the library is too large to add, extend the setup_libtorch.sh script and make it install everything required inside of the third_party folder. Everything must build successfully!
 
 ### Important Constraints
 - **Controller Executor**: You cannot modify `controller_executor.cpp` - only work within your controller class
 - **Observations**: You must use only the provided observations from `ControllerObservations` structure
 - **Interface**: Your controller must inherit from `BaseController` and implement the standard interface
-
-### Need Changes Outside These Constraints?
-If you need modifications to the executor, additional observations, or other framework changes, please contact the maintainer: **pfrivik@ethz.ch**
+- **Outputs**: The outputs are also standardized with `ControllerOutputs` structure
 
 ---
 
