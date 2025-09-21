@@ -1,10 +1,5 @@
 # WLR Competition 2025 - Anymal on Wheels (AoW)
 
-**Maintainers**: 
-- Victor Klemm
-- Jiangpeng Hu  
-- Per Frivik (pfrivik@ethz.ch)
-
 This repository contains the control framework for the WLR Competition 2025. Participants develop custom controllers for a four-wheeled quadruped robot using their preferred control algorithms to track trajectories in a ROS 2 / Gazebo simulation environment.
 
 **Tested with ROS 2 Jazzy on Ubuntu 24.04 LTS.**
@@ -219,7 +214,7 @@ controller_executor:
     use_lockstep: true    # Enable if simulation outpaces your controller
 ```
 
-This will pause the gazebo simulation until your inference loop is completed. We set it to true by default and highly recommend that you leave it on too. 
+This will pause the gazebo simulation until your inference loop is completed. We set it to true by default and highly recommend that you leave it on as well. 
 
 ## 🧠 Training Your Own End2End Controller (Optional)
 
@@ -350,3 +345,15 @@ colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 ```
 
 For technical support, contact: **Per Frivik** (pfrivik@ethz.ch)
+
+---
+
+## Authors
+- Per Frivik (pfrivik@ethz.ch)
+- Jiangpeng Hu (hujian@ethz.ch)
+
+## Maintainers
+- Per Frivik (pfrivik@ethz.ch) 
+- Jiangpeng Hu (hujian@ethz.ch)
+- Victor Klemm (victor.klemm@ethz.ch)
+- Fan Yang (fanyang1@ethz.ch)
