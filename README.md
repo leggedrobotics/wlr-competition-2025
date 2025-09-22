@@ -344,7 +344,7 @@ rm -rf build install log
 colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 ```
 
-For technical support, contact: **Per Frivik** (pfrivik@ethz.ch)
+If you have any issues open an issue in this github repository! 
 
 ---
 
